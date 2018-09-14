@@ -1,0 +1,15 @@
+{
+    "usingComponents": {
+        "i-tab-bar": "../../../static/iview/tab-bar/index",
+        "i-tab-bar-item": "../../../static/iview/tab-bar-item/index",
+        "i-button": "../../../static/iview/button/index",
+        "i-card": "../../static/iview/card/index",
+        "i-avatar": "../../static/iview/avatar/index",
+        "i-spin": "../../static/iview/spin/index",
+        "i-badge": "../../static/iview/badge/index",
+        "i-swipeout": "../../static/iview/swipeout/index",
+        "i-cell": "../../static/iview/cell/index",
+        "i-icon": "../../static/iview/icon/index",
+        "i-drawer": "../../static/iview/drawer/index"
+    }
+}
