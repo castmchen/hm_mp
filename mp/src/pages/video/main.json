@@ -3,6 +3,7 @@
     "usingComponents": {
         "i-tabs": "../../static/iview/tabs/index",
         "i-tab": "../../../static/iview/tab/index",
-        "i-tag": "../../static/iview/tag/index"
+        "i-tag": "../../static/iview/tag/index",
+        "i-spin": "../../static/iview/spin/index"
     }
 }

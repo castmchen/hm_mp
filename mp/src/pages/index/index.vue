@@ -9,7 +9,7 @@
     </div>
 
     <div id="footer">
-      <i-tab-bar :current="currentTab"
+      <i-tab-bar :current="current"
                  :color="selectColor"
                  @change="handleChange">
         <i-tab-bar-item key="home"
@@ -33,7 +33,7 @@
 
     <div id="loading">
       <i-spin size="large"
-              v-if="showFlag"
+              v-if="matteFlag"
               fix></i-spin>
     </div>
   </div>
@@ -49,13 +49,13 @@ import { mapActions, mapGetters } from 'vuex'
 
 export default {
   data: {
-    currentTab: "",
+    current: "",
     selectColor: "#f759ab",
-    showFlag: false
+    matteFlag: false
   },
   methods: {
     handleChange(e) {
-      this.currentTab = e.target.key
+      this.current = e.target.key
     },
     initNotifications() {
       let notifications = notificationServie.getNotificationsById('castm')
@@ -64,7 +64,7 @@ export default {
       }
     },
     navigateToPage(url) {
-      this.showFlag = true
+      this.matteFlag = true
       wx.navigateTo({ url })
     },
     ...mapActions([
@@ -78,12 +78,12 @@ export default {
     ...mapGetters(["notificationCount"])
   },
   created() {
-    this.showFlag = true
+    this.matteFlag = true
     this.currentTab = "home"
     this.initNotifications()
   },
   onShow() {
-    this.showFlag = false
+    this.matteFlag = false
   },
   components: { background, home, notification, service }
 }
