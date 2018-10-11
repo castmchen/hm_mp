@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- <background></background> -->
     <div id="tabs">
       <i-tabs :current="current"
               color="#f759ab"
@@ -12,12 +11,10 @@
       </i-tabs>
     </div>
 
-    <div id="videos"
-         style="margin-top:45px; z-index:1">
-
+    <div id="videos">
       <div v-for="(videoInfo, index) in videoList"
            :key="index">
-        <img src="/static/img/tvborder.png" />
+        <!-- <img src="/static/img/tvborder.png" /> -->
         <span>{{videoInfo.title}}</span>
         <video :id="index"
                :key="index"
@@ -26,74 +23,119 @@
                controls></video>
       </div>
     </div>
-    <i-spin size="large"
-            v-if="matteFlag"
-            fix></i-spin>
+
+    <i-load-more v-if="flagInfo.matteFlag" />
+    <i-divider content="加载已经完成,没有更多数据"
+               v-if="flagInfo.dividerFlag"></i-divider>
   </div>
 </template>
 
 <script>
-import background from '../../components/background'
 import { tabs } from '../../common/videoTabs'
 import * as videoApi from '../../common//apiConstant'
 import { getVideoList } from '../../service/videoService'
-import { validateErrorCode } from '../../utils/index'
+import { mapActions, mapGetters } from 'vuex'
 
+var flagInfo = { matteFlag: false, dividerFlag: false, httpFlag: false }
 export default {
   data() {
     return {
-      current: '',
+      current: tabs[0].tab,
       tabs: tabs,
-      matteFlag: false,
+      flagInfo: flagInfo,
       videoList: [],
-      count: 0
+      count: 1
     }
   },
   methods: {
     handleChangeScroll(e) {
+      this.flagInfo.dividerFlag = false
       this.current = e.target.key
+      this.initVideoList(true)
     },
-    initVideoList(videoListCallback) {
-      if (videoListCallback == null || typeof videoListCallback != "object" || videoListCallback.length === 0) {
-        // TODO => 提示没有更多数据
+    initVideoList(changeTab) {
+      if (this.flagInfo.httpFlag) {
+        return
       }
-      this.videoList = this.videoList.contact(videoListCallback)
-    }
+      this.showFloat()
+      var that = this
+      let currentVideoInfo = this.getterVideoList(this.current)
+      if (currentVideoInfo == null || currentVideoInfo.videos == null || currentVideoInfo.videos.length === 0) {
+        this.count = 1
+        this.videoList = []
+      } else {
+        if (changeTab) {
+          this.videoList = currentVideoInfo.videos
+          this.hideFloat()
+          return
+        }
+        this.count = currentVideoInfo.count + 1
+      }
+      this.getVideoListByApi(this.current).then(() => {
+        that.videoList = that.getterVideoList(that.current).videos
+        this.hideFloat()
+      })
+    },
+    async getVideoListByApi(tabValue) {
+      var that = this
+      let targetUrl = this.getTargetUrl(tabValue, this.count)
+      if (targetUrl != '') {
+        try {
+          var response = await getVideoList(targetUrl)
+          var videoList = response.result
+          if (videoList != null && typeof videoList != 'undefined' && videoList.length > 0) {
+            await that.add_videoList({ tab: that.current, count: that.count, videos: videoList })
+          } else {
+            that.flagInfo.dividerFlag = true
+          }
+        } catch (e) {
+          console.error('An error has occured.', e)
+          that.hideFloat()
+        }
+      }
+    },
+    getTargetUrl(tabValue, count) {
+      let url = this.tabs.find((tabInfo) => { return tabInfo.tab == tabValue }).url
+      return videoApi.buildTargetUrl(url, count)
+    },
+    showFloat() {
+      this.flagInfo.matteFlag = true
+      this.flagInfo.httpFlag = true
+    },
+    hideFloat() {
+      this.flagInfo.matteFlag = false
+      this.flagInfo.httpFlag = false
+    },
+    ...mapActions([
+      "add_videoList"
+    ])
+  },
+  computed: {
+    ...mapGetters(["getterVideoList"])
   },
   created() {
-    this.matteFlag = true
-    let defaultTabInfo = tabs[0]
-    this.current = defaultTabInfo.tab
-    let targetUrl = videoApi.buildTargetUrl(defaultTabInfo.url, this.count)
-    console.log(targetUrl)
-    console.log(encodeURI(targetUrl))
-    getVideoList(encodeURI(targetUrl)).then(response => {
-      let { resFlag, data } = validateErrorCode(response)
-      if (resFlag) {
-        this.initVideoList(data)
-      }
-    }).catch(e => {
-      this.matteFlag = false
-      console.error('An error has occured.', e)
-    })
   },
   onShow() {
+    this.initVideoList()
   },
-  components: { background }
+  onReachBottom() {
+    this.initVideoList()
+  }
 }
 </script>
 
 <style scoped>
 #tabs {
-  position: fixed;
+  /* position: fixed; */
   top: 0px;
+  z-index: 3;
 }
 
 #videos div {
   position: flex;
   width: 90%;
   border-bottom: 1px solid #dddee1;
-  /* margin-top: 3px; */
+  margin-top: 3px;
   margin-left: 5%;
   border-radius: 15px;
   text-align: left;
@@ -107,13 +149,14 @@ video {
   width: 574rpx;
   position: relative;
   /* border-radius: 15px; */
-  border-bottom-left-radius: 5px;
+  sborder-bottom-left-radius: 5px;
   border-top-left-radius: 5px;
   border-bottom-right-radius: 5px;
   border-top-right-radius: 5px;
-  margin-top: 22px;
-  margin-left: 46rpx;
+  margin-top: 20rpx;
+  margin-left: 48rpx;
   z-index: 2;
+  display: block;
 }
 
 #videos div img {
@@ -127,6 +170,10 @@ span {
   font-size: 12px;
   color: #80848f;
   margin-left: 12px;
+}
+
+#matte {
+  z-index: 999;
 }
 </style>
 

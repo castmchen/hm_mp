@@ -1,6 +1,7 @@
 import * as constant from './constant'
 
 export default {
+    // Notification
     update_uerInfo({ commit }, userInfo) {
         commit(constant.UPDATE_USERINFO, userInfo)
     },
@@ -32,5 +33,14 @@ export default {
     },
     update_notificationCount({ commit }, count) {
         commit(constant.UPDATE_NOTIFICATIONCOUNT, count)
+    },
+
+    // Video
+    add_videoList({ commit }, videoTabInfo) {
+        commit(constant.ADD_VIDEOLIST, videoTabInfo)
+        return new Promise((resolve, reject) => { resolve('success') })
+    },
+    get_videoList({ commit }, tabValue) {
+        return commit(constant.GET_VIDEOLIST, tabValue)
     }
 }

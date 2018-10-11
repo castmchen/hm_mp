@@ -1,6 +1,7 @@
 import * as constant from './constant'
 
 export default {
+    // NOTIFICATION
     [constant.UPDATE_USERINFO](state, userInfo) {
         state.UserInfo = userInfo
     },
@@ -24,7 +25,7 @@ export default {
         state.Notifications = notificationList
     },
     [constant.GET_NOTIFICATION](state, id) {
-        state.Notifications.find((notification) => { return notification.id == id })
+        return state.Notifications.find((notification) => { return notification.id == id })
     },
     [constant.GET_NOTIFICATIONS](state) {
         return state.Notifications
@@ -39,5 +40,25 @@ export default {
     },
     [constant.UPDATE_NOTIFICATIONCOUNT](state, count) {
         state.NotificationCount = count
+    },
+
+    // VIDEO
+    [constant.GET_VIDEOLIST](state, tabValue) {
+        return state.VideoList.find(function(videoInfo) { return videoInfo.tab == tabValue })
+    },
+    [constant.ADD_VIDEOLIST](state, videoTabInfo) {
+        var existTabInfo = state.VideoList.find((videoInfo) => { return videoInfo.tab == videoTabInfo.tab })
+        if (existTabInfo == null || typeof existTabInfo == 'undefined') {
+            state.VideoList.push(videoTabInfo)
+        } else {
+            existTabInfo.count = videoTabInfo.count
+            existTabInfo.videos = existTabInfo.videos.concat(videoTabInfo.videos)
+            state.VideoList = state.VideoList.map(_ => {
+                if (_.tab === existTabInfo.tab) {
+                    return existTabInfo
+                }
+                return _
+            })
+        }
     }
 }

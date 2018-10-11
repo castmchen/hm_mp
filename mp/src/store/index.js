@@ -9,7 +9,8 @@ Vue.use(Vuex)
 const state = {
     UserInfo: {},
     Notifications: [],
-    NotificationCount: 0
+    NotificationCount: 0,
+    VideoList: []
 }
 
 const store = new Vuex.Store({
