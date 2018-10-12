@@ -25,6 +25,7 @@
     </div>
 
     <i-load-more v-if="flagInfo.matteFlag" />
+    <i-toast id="toast" />
     <i-divider content="加载已经完成,没有更多数据"
                v-if="flagInfo.dividerFlag"></i-divider>
   </div>
@@ -36,6 +37,7 @@ import * as videoApi from '../../common//apiConstant'
 import { getVideoList } from '../../service/videoService'
 import { mapActions, mapGetters } from 'vuex'
 
+const { $Toast } = require('../../../static/iview/base/index.js')
 var flagInfo = { matteFlag: false, dividerFlag: false, httpFlag: false }
 export default {
   data() {
@@ -49,14 +51,18 @@ export default {
   },
   methods: {
     handleChangeScroll(e) {
-      this.flagInfo.dividerFlag = false
-      this.current = e.target.key
-      this.initVideoList(true)
-    },
-    initVideoList(changeTab) {
       if (this.flagInfo.httpFlag) {
         return
       }
+      this.flagInfo.dividerFlag = false
+      this.current = e.target.key
+      this.initVideoList()
+    },
+    initVideoList(refresh) {
+      if (this.flagInfo.httpFlag) {
+        return
+      }
+
       this.showFloat()
       var that = this
       let currentVideoInfo = this.getterVideoList(this.current)
@@ -64,7 +70,8 @@ export default {
         this.count = 1
         this.videoList = []
       } else {
-        if (changeTab) {
+        if (!refresh) {
+          this.videoList = []
           this.videoList = currentVideoInfo.videos
           this.hideFloat()
           return
@@ -101,14 +108,24 @@ export default {
     showFloat() {
       this.flagInfo.matteFlag = true
       this.flagInfo.httpFlag = true
+      // this.handleMask()
     },
     hideFloat() {
       this.flagInfo.matteFlag = false
       this.flagInfo.httpFlag = false
+      // $Toast.hide()
     },
     ...mapActions([
       "add_videoList"
-    ])
+    ]),
+    handleMask() {
+      $Toast({
+        content: '视频加载中',
+        type: 'loading',
+        duration: 0,
+        mask: false
+      })
+    }
   },
   computed: {
     ...mapGetters(["getterVideoList"])
@@ -119,7 +136,7 @@ export default {
     this.initVideoList()
   },
   onReachBottom() {
-    this.initVideoList()
+    this.initVideoList(true)
   }
 }
 </script>

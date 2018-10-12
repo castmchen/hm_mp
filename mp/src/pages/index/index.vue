@@ -9,7 +9,7 @@
     </div>
 
     <div id="footer">
-      <i-tab-bar :current="current"
+      <i-tab-bar :current="currentTab"
                  :color="selectColor"
                  @change="handleChange">
         <i-tab-bar-item key="home"
@@ -49,13 +49,13 @@ import { mapActions, mapGetters } from 'vuex'
 
 export default {
   data: {
-    current: "",
+    currentTab: "",
     selectColor: "#f759ab",
     matteFlag: false
   },
   methods: {
     handleChange(e) {
-      this.current = e.target.key
+      this.currentTab = e.target.key
     },
     initNotifications() {
       let notifications = notificationServie.getNotificationsById('castm')

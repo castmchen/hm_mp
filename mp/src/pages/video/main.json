@@ -5,6 +5,7 @@
         "i-tab": "../../../static/iview/tab/index",
         "i-tag": "../../static/iview/tag/index",
         "i-load-more": "../../static/iview/load-more/index",
-        "i-divider": "../../static/iview/divider/index"
+        "i-divider": "../../static/iview/divider/index",
+        "i-toast": "../../static/iview/toast/index"
     }
 }
