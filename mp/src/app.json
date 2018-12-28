@@ -5,12 +5,15 @@
         "pages/joke/main",
         "pages/game/main",
         "pages/video/main",
-        "pages/logs/main"
+        "pages/logs/main",
+        "pages/search/main",
+        "pages/profile/main",
+        "pages/chat/main"
     ],
     "window": {
         "backgroundTextStyle": "light",
         "navigationBarBackgroundColor": "#fff",
-        "navigationBarTitleText": "笑 Y",
+        "navigationBarTitleText": "逗斗",
         "navigationBarTextStyle": "black"
     }
 }

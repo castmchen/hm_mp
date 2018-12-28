@@ -1,6 +1,6 @@
 import NotificationModel from '../model/notificationModel'
 
-const notificationService = {
+export const notificationService = {
     getNotificationsById() {
         // TODO => 调用API获取notificationList
         let notificationsDomain = [{
@@ -24,5 +24,3 @@ const notificationService = {
         return result
     }
 }
-
-export default notificationService

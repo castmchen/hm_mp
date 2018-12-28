@@ -1,0 +1,9 @@
+{
+    "navigationBarTitleText": "撩一下",
+    "usingComponents": {
+        "i-avatar": "../../static/iview/avatar/index",
+        "i-icon": "../../static/iview/icon/index",
+        "i-row": "../../static/iview/row/index",
+        "i-col": "../../static/iview/col/index"
+    }
+}

@@ -14,7 +14,6 @@
     <div id="videos">
       <div v-for="(videoInfo, index) in videoList"
            :key="index">
-        <!-- <img src="/static/img/tvborder.png" /> -->
         <span>{{videoInfo.title}}</span>
         <video :id="index"
                :key="index"
@@ -24,7 +23,7 @@
       </div>
     </div>
 
-    <i-load-more v-if="flagInfo.matteFlag" />
+    <i-load-more v-if="flagInfo.isLoadingFlag" />
     <i-toast id="toast" />
     <i-divider content="加载已经完成,没有更多数据"
                v-if="flagInfo.dividerFlag"></i-divider>
@@ -38,7 +37,7 @@ import { getVideoList } from '../../service/videoService'
 import { mapActions, mapGetters } from 'vuex'
 
 const { $Toast } = require('../../../static/iview/base/index.js')
-var flagInfo = { matteFlag: false, dividerFlag: false, httpFlag: false }
+var flagInfo = { isLoadingFlag: false, dividerFlag: false, httpFlag: false }
 export default {
   data() {
     return {
@@ -106,12 +105,12 @@ export default {
       return videoApi.buildTargetUrl(url, count)
     },
     showFloat() {
-      this.flagInfo.matteFlag = true
+      this.flagInfo.isLoadingFlag = true
       this.flagInfo.httpFlag = true
       // this.handleMask()
     },
     hideFloat() {
-      this.flagInfo.matteFlag = false
+      this.flagInfo.isLoadingFlag = false
       this.flagInfo.httpFlag = false
       // $Toast.hide()
     },

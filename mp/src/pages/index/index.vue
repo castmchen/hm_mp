@@ -1,14 +1,13 @@
 <template>
-  <div>
-    <background></background>
-    <div id="main_container">
+  <div id="castm-home">
+    <div id="castm-main">
       <home :currentTab="currentTab"
             @navigateToPage="navigateToPage"></home>
       <notification :currentTab="currentTab"></notification>
       <service :currentTab="currentTab"></service>
     </div>
 
-    <div id="footer">
+    <div id="castm-footer">
       <i-tab-bar :current="currentTab"
                  :color="selectColor"
                  @change="handleChange">
@@ -27,44 +26,45 @@
                         current-icon="customerservice_fill"
                         title="服务中心"></i-tab-bar-item>
       </i-tab-bar>
-      <i-badge :count="notificationCount"
-               i-class-alone="demo-badge-alone" />
+      <div id="castm-footer-notificationBadge">
+        <i-badge :count="notificationCount"
+                 i-class-alone="demo-badge-alone" />
+      </div>
     </div>
 
-    <div id="loading">
+    <div id="castm-loading">
       <i-spin size="large"
-              v-if="matteFlag"
+              v-if="isLoadingFlag"
               fix></i-spin>
     </div>
   </div>
 </template>
 
 <script>
-import background from '../../components/background'
 import home from '../../components/home'
 import notification from '../../components/notification'
 import service from '../../components/service'
-import notificationServie from '../../service/notificationService'
+import { notificationService } from '../../service/notificationService'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
   data: {
     currentTab: "",
     selectColor: "#f759ab",
-    matteFlag: false
+    isLoadingFlag: false
   },
   methods: {
     handleChange(e) {
       this.currentTab = e.target.key
     },
     initNotifications() {
-      let notifications = notificationServie.getNotificationsById('castm')
+      let notifications = notificationService.getNotificationsById('castm')
       if (notifications != null && typeof notifications != 'undefined' && notifications.length > 0) {
         this.update_notification(notifications)
       }
     },
     navigateToPage(url) {
-      this.matteFlag = true
+      this.isLoadingFlag = true
       wx.navigateTo({ url })
     },
     ...mapActions([
@@ -78,32 +78,42 @@ export default {
     ...mapGetters(["notificationCount"])
   },
   created() {
-    this.matteFlag = true
+    this.isLoadingFlag = true
     this.currentTab = "home"
     this.initNotifications()
   },
   onShow() {
-    this.matteFlag = false
+    this.isLoadingFlag = false
   },
-  components: { background, home, notification, service }
+  components: { home, notification, service }
 }
 </script>
 
 <style scoped>
-#footer {
+#castm-home {
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  font-size: 12px;
+  color: #80848f;
+}
+#castm-home #castm-main {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -999;
+  width: 100%;
+  height: 100%;
+  background: rgba(248, 248, 225, 0.6);
+}
+#castm-home #castm-footer {
   position: fixed;
   bottom: 0px;
   width: 100%;
 }
 
-i-card {
-  font-weight: 500;
-}
-
-i-badge {
-  position: fixed;
+#castm-home #castm-footer #castm-footer-notificationBadge {
+  position: absolute;
   z-index: 999;
-  bottom: 27px;
-  left: 52.7%;
+  bottom: 30px;
+  left: calc(50% + 5px);
 }
 </style>

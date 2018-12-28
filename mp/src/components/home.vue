@@ -1,11 +1,11 @@
 <template>
   <div id="home"
        v-if="currentTab == 'home'">
-    <div id="person_container">
+    <div id="person-container">
       <i-avatar src="/static/img/unlogin.png"
                 size="large"></i-avatar>
     </div>
-    <div id="ad_container">
+    <div id="ad-container">
       <img src="/static/img/ad1.png" />
     </div>
     <div id="card_container">
@@ -68,12 +68,12 @@ export default {
 </script>
 
 <style scoped>
-#person_container {
+#person-container {
   text-align: center;
   margin-top: 5px;
 }
 
-#ad_container {
+#ad-container {
   height: 20vh;
   margin: 5px 16px 0px 16px;
   font-size: 14px;
@@ -84,7 +84,7 @@ export default {
   border-radius: 10px;
 }
 
-#ad_container img {
+#ad-container img {
   width: 100%;
   height: 100%;
 }

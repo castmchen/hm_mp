@@ -1,10 +1,12 @@
 <template>
-  <div id="background">
-  </div>
+  <i-spin size="large"
+          v-if="isLoadingFlag"
+          fix></i-spin>
 </template>
 
 <script>
 export default {
+  props: ["isLoadingFlag"],
   data() {
 
   }
@@ -12,14 +14,5 @@ export default {
 </script>
 
 <style scoped>
-#background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: -999;
-  width: 100%;
-  height: 100%;
-  background-color: #d0ff00c7 !important;
-}
 </style>
 

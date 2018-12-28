@@ -1,3 +1,9 @@
 {
-    "navigationBarTitleText": "约一下"
+    "navigationBarTitleText": "约一下",
+    "usingComponents": {
+        "i-icon": "../../static/iview/icon/index",
+        "i-avatar": "../../static/iview/avatar/index",
+        "i-drawer": "../../static/iview/drawer/index",
+        "i-spin": "../../static/iview/spin/index"
+    }
 }
