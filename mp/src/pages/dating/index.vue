@@ -2,8 +2,8 @@
   <div id="castm-dating">
     <div id="castm-operate">
       <i-icon type="browse_fill"
-              size="40"
-              color="#ffc95c"
+              size="50"
+              color="rgba(30, 54, 42, 1)"
               @click="navigateToSearch('../search/main')" />
     </div>
 
@@ -19,7 +19,7 @@
           </span>
         </div>
         <div class="contact-row-right">
-          <i-icon type="interactive"
+          <i-icon type="message"
                   size="25"
                   @click="navigateToChat(contactInfo)" />
           <i-icon type="other"
@@ -32,12 +32,12 @@
       <i-drawer mode="right"
                 :visible="selectedContact != null"
                 @close="hideMoreActions">
-        <i-icon type="dynamic"
-                size="30"
-                @click="navigateToMatch('../match/main')" />
         <i-icon type="message"
                 size="30"
                 @click="navigateToChat()" />
+        <i-icon type="dynamic"
+                size="30"
+                @click="navigateToMatch('../match/main')" />
         <i-icon type="shop_fill"
                 size="30" />
         <i-icon type="redpacket"
@@ -132,19 +132,20 @@ export default {
 #castm-dating {
   font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
   font-size: 16px;
-  background: rgba(248, 248, 225, 0.6);
+  background: #ffffff;
   position: absolute;
   width: 100%;
   min-height: 100%;
   color: #80848f;
 }
 #castm-dating #castm-operate {
-  width: 40px;
+  /* width: 40px;
   margin-left: calc(50% - 15px);
   margin-top: 15px;
   border: #ffc95c 1rpx solid;
   border-radius: 30%;
-  box-shadow: #ffc95c 0px 0px 30px 10px;
+  box-shadow: #ffc95c 0px 0px 30px 10px; */
+  text-align: center;
 }
 
 #castm-dating #castm-contactList {
@@ -169,7 +170,7 @@ export default {
   display: inline-block;
   height: 100%;
   width: 27%;
-  background: rgba(30, 54, 42, 0.1);
+  background: rgba(30, 54, 42, 0.8);
   color: #ffffff;
 }
 
@@ -182,16 +183,19 @@ export default {
 i-drawer i-icon {
   display: block;
   color: #ffffff;
-  background: #19be6b;
+  background: #ffffff;
+  color: rgba(30, 54, 42, 1);
   text-align: center;
   height: 50px;
   padding-top: 25px;
 }
 
-i-drawer i-icon:nth-child(2n) {
-  background: #f90;
+i-drawer i-icon:first-child {
+  background: #19be6b;
+  color: #ffffff;
 }
 i-drawer i-icon:last-child {
   background: #ed3f14;
+  color: #ffffff;
 }
 </style>

@@ -5,13 +5,22 @@
                  :scroll-into-view="'id-' + (chatList.length-2)">
       <div v-for="(chatItem, index) in chatList"
            :key="index">
-        <i-avatar :class="chatItem.speaker == '1'?'float-left clear-both':'float-right clear-both'"
+        <i-avatar :class="chatItem.speaker == '1'?'float-right clear-both':'float-left clear-both'"
                   src="/static/img/game.png"
                   size="small"></i-avatar>
-        <span :id="'id-' + index"
-              :class="chatItem.speaker == '1'?'float-left bg-left':'float-right bg-right'">
+        <div v-if="chatItem.type === '1'"
+             :id="'id-' + index"
+             :class="chatItem.speaker == '1' ? 'float-right bg-right' : 'float-left bg-left'">
           {{chatItem.chat}}
-        </span>
+        </div>
+        <div v-if="chatItem.type === '2'"
+             :id="'id-' + index"
+             :class="chatItem.speaker === '1' ? 'float-right bg-right' : 'float-left bg-left'"
+             :style="{ width : chatItem.chat + 'px', height : '40px'}"
+             @click="audioPlay(chatItem)">
+          <sound ref="childSound"
+                 :position="chatItem.speaker === '1' ? 'left' :'right'"></sound>
+        </div>
       </div>
     </scroll-view>
     <div id="castm-chat-footer">
@@ -25,17 +34,21 @@
             </div>
           </i-col>
           <i-col span="17">
-            <input v-if="inputCategory === 'keyboard'"
+            <input v-if="inputCategory === 'translation'"
                    type="text"
                    class="footer-input"
                    :focus="isShowKeyboardFlag"
-                   :cursor-spacing=300
+                   :cursor-spacing=10
                    :value="inputValue"
-                   @focus="controleKeyboard(null, true)"
-                   @blur="controleKeyboard(null, false)"
-                   @confirm="controleKeyboard($event, false)" />
-            <button v-if="inputCategory === 'translation'"
-                    class="footer-button">按住撩</button>
+                   confirm-hold=true
+                   @focus="controleKeyboard(true)"
+                   @blur="controleKeyboard(false)"
+                   @confirm="sendMessage($event)" />
+            <button v-if="inputCategory === 'keyboard'"
+                    hover-class="recordingStyle"
+                    class="footer-button"
+                    @touchstart="beginRecord($event)"
+                    @touchend="stopRecord($event)">{{recordInfo != null && recordInfo.isRecordingFlag? '松开 结束' : '按住 说话'}}</button>
           </i-col>
           <i-col span="4">
             <i-icon type="emoji"
@@ -46,10 +59,14 @@
         </i-row>
       </div>
     </div>
+    <record ref="childRecord"></record>
   </div>
 </template>
 
 <script>
+
+import record from '../../components/record'
+import sound from '../../components/sound'
 
 const chatList = [
   {
@@ -261,51 +278,179 @@ const chatList = [
     speaker: '2',
     type: '1',
     chat: '嗯呐, 啥都吃'
+  },
+  {
+    speaker: '1',
+    type: '2',
+    chat: 50,
+    filePath: 'wxfile://tmp_18dd016ff737e659158f030d4e835c58.mp3'
+  },
+  {
+    speaker: '2',
+    type: '2',
+    chat: 80,
+    filePath: 'wxfile://tmp_18dd016ff737e659158f030d4e835c58.mp3'
+  },
+  {
+    speaker: '1',
+    type: '2',
+    chat: 120,
+    filePath: 'wxfile://tmp_18dd016ff737e659158f030d4e835c58.mp3'
   }
 ]
 const categoryList = ["keyboard", "translation"]
+const recordInfo = {
+  isRecordingFlag: false,
+  startTime: null,
+  endTime: null,
+  width: 0,
+  format: 'aac',
+  filePath: ''
+}
 export default {
   data() {
     return {
       chatList: chatList,
       inputCategory: "keyboard",
       inputValue: "",
-      isShowKeyboardFlag: false
+      isShowKeyboardFlag: false,
+      recorderManager: {},
+      innerAudioContext: {},
+      recordInfo: null
     }
   },
   created() {
   },
   onHide() {
   },
-  onLoad() {
+  onShow() {
+    this.recorderManager = wx.getRecorderManager()
+    this.recorderManager.onError((res) => {
+      this.popupTip(res)
+    })
+    this.recorderManager.onStop((res) => {
+      this.recordingCallback(res)
+    })
+    this.innerAudioContext = wx.createInnerAudioContext()
+    this.innerAudioContext.obeyMuteSwitch = false
+    this.innerAudioContext.onPlay(() => {
+      console.log('开始播放')
+    })
+    this.innerAudioContext.onTimeUpdate(() => {
+      console.log('更新了')
+    })
+    this.innerAudioContext.onEnded(() => {
+      this.audioStop()
+      console.log('播放结束')
+    })
+    this.innerAudioContext.onWaiting(() => {
+      console.log('waiting')
+    })
+    this.innerAudioContext.onError((res) => {
+      this.audioStop()
+      this.popupTip(res)
+    })
   },
   methods: {
     initChatMain() {
       var chatMainEle = document.getElementById('castm-chat-main')
       chatMainEle.scrollTop = chatMainEle.scrollHeight - chatMainEle.clientWidth
     },
-    controleKeyboard(e, showKeyboard) {
-      if (e != null && !showKeyboard) {
-        let message = e.mp.detail.value
+    controleKeyboard(showKeyboard) {
+      this.isShowKeyboardFlag = showKeyboard
+    },
+    sendMessage(e) {
+      if (e != null) {
+        let message = e.mp.value
         if (message != null && message != '' && typeof message != 'undefined') {
           this.chatList.push({
             speaker: '1',
             type: '1',
-            chat: message
+            chat: ' ' + message + ' '
           })
           this.inputValue = ''
         }
       }
-      this.isShowKeyboardFlag = showKeyboard
     },
     changeCategory(categoryValue) {
       if (categoryList.indexOf(categoryValue) > -1) {
         let index = categoryList.indexOf(categoryValue)
         this.inputCategory = index < categoryList.length - 1 ? categoryList[++index] : categoryList[0]
       }
+    },
+    beginRecord(e) {
+      this.recordInfo = recordInfo
+      this.$refs.childRecord.startRecord()
+      this.recordInfo.isRecordingFlag = true
+      let startTimeStamp = e.mp.timeStamp
+      let startTime = (startTimeStamp % (1000 * 60)) / 1000
+      this.recordInfo.startTime = startTime
+      this.recorderManager.start({
+        format: this.recordInfo.format,
+        duration: 20000,
+        numberOfChannels: 1,
+        sampleRate: 44100,
+        encodeBitRate: 192000
+      })
+    },
+    stopRecord(e) {
+      this.$refs.childRecord.startRecord()
+      this.recordInfo.isRecordingFlag = false
+      let endTimeStamp = e.mp.timeStamp
+      let endTime = (endTimeStamp % (1000 * 60)) / 1000
+      this.recordInfo.endTime = endTime
+      this.recorderManager.stop()
+    },
+    recordingCallback(result) {
+      if (result != null && typeof result != 'undefined' && result.tempFilePath != null && result.tempFilePath != '') {
+        this.recordInfo.filePath = result.tempFilePath
+        let duration = this.recordInfo.endTime - this.recordInfo.startTime
+        this.recordInfo.width = duration < 20 ? duration * 15 : 300
+        this.recordInfo.width = this.recordInfo.width < 30 ? 30 : this.recordInfo.width
+        this.chatList.push({
+          speaker: '1',
+          type: '2',
+          chat: this.recordInfo.width,
+          filePath: this.recordInfo.filePath
+        })
+        console.log(this.recordInfo.filePath)
+        this.recordInfo = null
+      } else {
+        this.popupTip('录音失败,请重试!')
+      }
+    },
+    audioPlay(chatInfo) {
+      let filePath = chatInfo.filePath
+      if (filePath == '') {
+        this.popupTip('语音失效')
+      } else {
+        this.innerAudioContext.src = filePath
+        this.innerAudioContext.play()
+      }
+    },
+    audioStop() {
+      this.$refs.childSound.forEach((p, index) => {
+        if (p.timer != null) {
+          this.$refs.childSound[index].soundPlay()
+        }
+      })
+    },
+    popupTip(tip) {
+      if (typeof tip === 'string') {
+        wx.showModal({
+          title: '错误',
+          content: tip,
+          showCancel: false,
+          duration: 2000
+        })
+      } else {
+        console.log(tip.errMsg)
+      }
     }
   },
   components: {
+    record,
+    sound
   }
 }
 </script>
@@ -313,7 +458,7 @@ export default {
 <style scoped>
 #castm-chat {
   font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
-  font-size: 14px;
+  font-size: 16px;
   background: rgba(248, 248, 225, 0.2);
   position: absolute;
   width: 100%;
@@ -325,7 +470,7 @@ export default {
   position: relative;
   height: 92%;
   overflow-y: auto;
-  line-height: 30px;
+  line-height: 40px;
 }
 
 #castm-chat #castm-chat-main > div {
@@ -339,14 +484,14 @@ export default {
   border-top: rgba(248, 248, 225, 0.6) 0.5px solid;
   box-shadow: #ffc95c 0px 0px 10px 1px;
 }
-.bg-left {
+.bg-right {
   background: #baf267;
   color: #628d41;
   margin: 5px 2px 5px 2px;
   border: #628d41 0.5px solid;
   border-radius: 10%;
 }
-.bg-right {
+.bg-left {
   background: #ffe6ea;
   color: #cb525b;
   margin: 5px 2px 5px 2px;
@@ -375,7 +520,7 @@ export default {
 #castm-chat #castm-chat-footer .footer-row {
   position: absolute;
   width: 100%;
-  height: 30px;
+  height: 35px;
   top: 0;
   left: 0;
   right: 0;
@@ -384,7 +529,7 @@ export default {
 }
 #castm-chat #castm-chat-footer .footer-input {
   background: #ffffff;
-  height: 30px;
+  height: 35px;
   border-radius: 5px;
   border: lightgray 0.5px solid;
   box-sizing: border-box;
@@ -395,8 +540,15 @@ export default {
 
 #castm-chat #castm-chat-footer .footer-button {
   background: #ffffff;
-  height: 30px;
+  height: 35px;
   border-radius: 5px;
   font-size: 14px !important;
+}
+.recordingStyle {
+  background: lightgray !important;
+  color: #ffffff;
+}
+i-icon {
+  color: #808695;
 }
 </style>
