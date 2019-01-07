@@ -32,7 +32,7 @@
 
 <script>
 import { tabs } from '../../common/videoTabs'
-import * as videoApi from '../../common//apiConstant'
+import * as constant from '../../common/constant'
 import { getVideoList } from '../../service/videoService'
 import { mapActions, mapGetters } from 'vuex'
 
@@ -102,7 +102,7 @@ export default {
     },
     getTargetUrl(tabValue, count) {
       let url = this.tabs.find((tabInfo) => { return tabInfo.tab == tabValue }).url
-      return videoApi.buildTargetUrl(url, count)
+      return constant.buildTargetUrl(url, count)
     },
     showFloat() {
       this.flagInfo.isLoadingFlag = true

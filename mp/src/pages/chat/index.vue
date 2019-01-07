@@ -67,6 +67,7 @@
 
 import record from '../../components/record'
 import sound from '../../components/sound'
+import { CHATSERVERURL } from '../../common/constant'
 
 const chatList = [
   {
@@ -316,7 +317,8 @@ export default {
       isShowKeyboardFlag: false,
       recorderManager: {},
       innerAudioContext: {},
-      recordInfo: null
+      recordInfo: null,
+      isConnectingFlag: false
     }
   },
   created() {
@@ -330,6 +332,9 @@ export default {
     })
     this.recorderManager.onStop((res) => {
       this.recordingCallback(res)
+    })
+    this.recorderManager.onInterruptionBegin(() => {
+      this.recorderManager.stop()
     })
     this.innerAudioContext = wx.createInnerAudioContext()
     this.innerAudioContext.obeyMuteSwitch = false
@@ -351,6 +356,38 @@ export default {
       this.popupTip(res)
     })
   },
+  onLoad() {
+    wx.connectSocket({
+      url: CHATSERVERURL,
+      header: {
+        'content-type': 'application/json'
+      }
+    })
+    wx.onSocketMessage((res) => {
+      console.log('接受到服务器内容: ', res)
+      var result = JSON.parse(res.data)
+      if (result.errCode > 0) {
+        this.popupTip("内容涉及敏感信息!")
+      }
+      if (!result.msg) {
+        this.chatList.push({
+          speaker: '2',
+          type: '1',
+          chat: '&nbsp' + result.msg + '&nbsp'
+        })
+      }
+    })
+    wx.onSocketError((res) => {
+      console.log('websocket connect error.', res)
+    })
+    wx.onSocketOpen((res) => {
+      console.log('websocket has been connected successfully.', res)
+      this.isConnectingFlag = true
+    })
+    wx.onSocketClose((res) => {
+      console.log('websocket connection has been closed.', res)
+    })
+  },
   methods: {
     initChatMain() {
       var chatMainEle = document.getElementById('castm-chat-main')
@@ -363,12 +400,9 @@ export default {
       if (e != null) {
         let message = e.mp.value
         if (message != null && message != '' && typeof message != 'undefined') {
-          this.chatList.push({
-            speaker: '1',
-            type: '1',
-            chat: ' ' + message + ' '
-          })
-          this.inputValue = ''
+          this.sendWebSocketMessage(message)
+        } else {
+          this.popupTip("发送内容不能为空")
         }
       }
     },
@@ -407,14 +441,7 @@ export default {
         let duration = this.recordInfo.endTime - this.recordInfo.startTime
         this.recordInfo.width = duration < 20 ? duration * 15 : 300
         this.recordInfo.width = this.recordInfo.width < 30 ? 30 : this.recordInfo.width
-        this.chatList.push({
-          speaker: '1',
-          type: '2',
-          chat: this.recordInfo.width,
-          filePath: this.recordInfo.filePath
-        })
-        console.log(this.recordInfo.filePath)
-        this.recordInfo = null
+        this.sendWebSocketMessage()
       } else {
         this.popupTip('录音失败,请重试!')
       }
@@ -445,6 +472,35 @@ export default {
         })
       } else {
         console.log(tip.errMsg)
+      }
+    },
+    sendWebSocketMessage(content) {
+      if (this.isConnectingFlag) {
+        if (content == null || typeof content == 'undefined') {
+          content = this.recordInfo.filePath
+        }
+        wx.sendSocketMessage({
+          data: content,
+          success: res => {
+            content == null || typeof content == 'undefined' ? this.chatList.push({
+              speaker: '1',
+              type: '2',
+              chat: this.recordInfo.width,
+              filePath: this.recordInfo.filePath
+            }) : this.chatList.push({
+              speaker: '1',
+              type: '1',
+              chat: '&nbsp' + content + '&nbsp'
+            })
+            this.recordInfo = null
+            this.inputValue = ''
+          },
+          fail: (err) => {
+            this.recordInfo = null
+            this.inputValue = ''
+            this.popupTip(err)
+          }
+        })
       }
     }
   },
