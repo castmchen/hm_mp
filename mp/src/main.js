@@ -2,6 +2,9 @@ import Vue from 'vue'
 import App from './App'
 import store from './store/index'
 
+wx.cloud.init({
+    traceUser: true
+})
 Vue.config.productionTip = false
 App.mpType = 'app'
 Vue.prototype.$store = store

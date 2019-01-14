@@ -47,7 +47,7 @@
             <button v-if="inputCategory === 'keyboard'"
                     hover-class="recordingStyle"
                     class="footer-button"
-                    @touchstart="beginRecord($event)"
+                    @touchstart="startRecord($event)"
                     @touchend="stopRecord($event)">{{recordInfo != null && recordInfo.isRecordingFlag? '松开 结束' : '按住 说话'}}</button>
           </i-col>
           <i-col span="4">
@@ -412,7 +412,7 @@ export default {
         this.inputCategory = index < categoryList.length - 1 ? categoryList[++index] : categoryList[0]
       }
     },
-    beginRecord(e) {
+    startRecord(e) {
       this.recordInfo = recordInfo
       this.$refs.childRecord.startRecord()
       this.recordInfo.isRecordingFlag = true
