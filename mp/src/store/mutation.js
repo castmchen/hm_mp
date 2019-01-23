@@ -1,10 +1,17 @@
 import * as constant from './constant'
 
 export default {
-    // NOTIFICATION
+
+    //#region userInfo
+
     [constant.UPDATE_USERINFO](state, userInfo) {
         state.UserInfo = userInfo
     },
+
+    //#endregion
+
+    //#region notifications
+
     [constant.ADD_NOTIFICATION](state, notificationInfo) {
         state.Notifications.push(notificationInfo)
     },
@@ -42,7 +49,10 @@ export default {
         state.NotificationCount = count
     },
 
-    // VIDEO
+    //#endregion
+
+    //#region videos
+
     [constant.GET_VIDEOLIST](state, tabValue) {
         return state.VideoList.find(function(videoInfo) { return videoInfo.tab == tabValue })
     },
@@ -61,4 +71,6 @@ export default {
             })
         }
     }
+
+    //#endregion
 }

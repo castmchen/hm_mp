@@ -1,7 +1,21 @@
-// common_section
-export const CHATSERVERURL = 'ws://localhost:5000'
+//#region JMessage
 
-// video_section
+export const JM_APPKEY = "7037d4a61f1d7699c8263f57"
+export const JM_MASTERSECRET = "b05b46a8e9a5eb72ccab1121"
+export const JM_RANDOM_STR = "chenqiangchenqiangchenqiang"
+export const JM_USER_PASSWORD = "castmchen"
+
+//#endregion
+
+//#region www.lovepapa.site
+
+export const PAPA_CHATSERVERURL = 'wss://www.lovepapa.site/chat'
+export const PAPA_LOGIN_URL = "https://www.lovepapa.site/loginwechat"
+
+//#endregion
+
+//#region  video azure
+
 export const keyword = ''
 export const number = 0
 export const TENCENTVIDEOURL = 'https://castmspider.azurewebsites.net'
@@ -15,6 +29,10 @@ export const TENCENTVIDEOURL_LOL = 'https://castmspider.azurewebsites.net/api/ke
 export const TENCENTVIDEOURL_WOW = 'https://castmspider.azurewebsites.net/api/keyword?keyword=魔兽世界&num={number}'
 export const TENCENTVIDEOURL_CHIJI = 'https://castmspider.azurewebsites.net/api/keyword?keyword=吃鸡搞笑时刻&num={number}'
 export const TENCENTVIDEOURL_GAOXIAO = 'https://castmspider.azurewebsites.net/api/keyword?keyword=搞笑小视频&num={number}'
+
+//#endregion
+
+//#region common methods
 
 export function buildTargetUrl(url, number, keyword) {
     var targetUrl = ''
@@ -30,6 +48,8 @@ export function buildTargetUrlByNumber(url, number) {
     this.number = number
     return url
 }
+
+//#endregion
 
 export default {
     TENCENTVIDEOURL,

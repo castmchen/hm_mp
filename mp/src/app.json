@@ -2,6 +2,7 @@
     "cloud": true,
     "pages": [
         "pages/index/main",
+        "pages/authorise/main",
         "pages/dating/main",
         "pages/joke/main",
         "pages/game/main",

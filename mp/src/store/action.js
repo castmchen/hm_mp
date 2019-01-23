@@ -1,10 +1,16 @@
 import * as constant from './constant'
 
 export default {
-    // Notification
+    //#region userInfo
+
     update_uerInfo({ commit }, userInfo) {
         commit(constant.UPDATE_USERINFO, userInfo)
     },
+
+    //#endregion
+
+    //#region notifications
+
     add_notification({ commit }, notificationInfo) {
         commit(constant.ADD_NOTIFICATION, notificationInfo)
         commit(constant.ADD_NOTIFICATIONCOUNT, 1)
@@ -35,7 +41,10 @@ export default {
         commit(constant.UPDATE_NOTIFICATIONCOUNT, count)
     },
 
-    // Video
+    //#endregion
+
+    //#region videos
+
     add_videoList({ commit }, videoTabInfo) {
         commit(constant.ADD_VIDEOLIST, videoTabInfo)
         return new Promise((resolve, reject) => { resolve('success') })
@@ -43,4 +52,6 @@ export default {
     get_videoList({ commit }, tabValue) {
         return commit(constant.GET_VIDEOLIST, tabValue)
     }
+
+    //#endregion
 }

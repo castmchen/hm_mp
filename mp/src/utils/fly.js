@@ -5,10 +5,10 @@ var fly = new Fly() // 创建fly实例
 fly.interceptors.request.use((request) => {
     // 给suoyo9u请求添加自定义的header
     request.headers['X-Tag'] = 'flyio'
+    request.headers['content-type'] = 'application/json'
         // request.headersp['content-type'] = 'application/x-www-form-urlencoded'
-        // request.headers['content-type'] = 'application/json'
 
-    if (request.headers['ignoreToken']) {
+    if (typeof request.headers['Authorization'] == "undefined") {
         return request
     }
 
@@ -16,12 +16,12 @@ fly.interceptors.request.use((request) => {
     // let token = store.getters.accessToken
     let token = null
     if (token !== null) {
-        request.headers['token'] = token
+        request.headers['Authorization'] = token
         return request
     } else {
         fly.lock()
-        return new Fly().get('/token').then(_ => {
-            request.headers['csrfToken'] = _.data.data.token
+        return new Fly().get('/authenticate').then(_ => {
+            request.headers['Authorization'] = _.data.data.token
                 // TODO => token添加到vuex中保存
             return request
         }).finally(() => {
@@ -33,11 +33,14 @@ fly.interceptors.request.use((request) => {
 fly.interceptors.response.use(
     (response) => {
         //只将请求结果的data字段返回
-        return response.data
+        if (response.data && typeof response.data === 'string') {
+            return JSON.parse(response.data)
+        }
+        return response
     },
     (e) => {
         //发生网络错误后会走到这里
-        console.error('An error has occured.', e)
+        console.error('An error has occured while proccessing .', e)
             //return Promise.resolve("ssss")
     }
 )

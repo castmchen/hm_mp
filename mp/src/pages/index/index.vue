@@ -37,10 +37,13 @@
               v-if="isLoadingFlag"
               fix></i-spin>
     </div>
+
   </div>
 </template>
 
 <script>
+import global from '../../common/global'
+import JIMInit from '../../common/jm.InitService'
 import home from '../../components/home'
 import notification from '../../components/notification'
 import service from '../../components/service'
@@ -77,10 +80,17 @@ export default {
   computed: {
     ...mapGetters(["notificationCount"])
   },
-  created() {
+  onLoad() {
+    if (global.username === '') {
+      wx.navigateTo({ url: '../authorise/main' })
+    }
+    JIMInit.JMInit()
+
     this.isLoadingFlag = true
     this.currentTab = "home"
     this.initNotifications()
+  },
+  created() {
   },
   onShow() {
     this.isLoadingFlag = false
@@ -95,6 +105,7 @@ export default {
   font-size: 12px;
   color: #80848f;
 }
+
 #castm-home #castm-main {
   position: absolute;
   top: 0;
@@ -104,6 +115,7 @@ export default {
   height: 100%;
   background: rgba(248, 248, 225, 0.6);
 }
+
 #castm-home #castm-footer {
   position: fixed;
   bottom: 0px;

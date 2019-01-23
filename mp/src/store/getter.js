@@ -1,9 +1,14 @@
 export default {
+    //#region userInfo
+
     userInfo: state => {
         return state.userInfo
     },
 
-    // notification
+    //#endregion
+
+    //#region notifications
+
     notificationList: state => {
         return state.Notifications.filter((notification) => {
             return notification.type < 3
@@ -13,8 +18,13 @@ export default {
         return state.NotificationCount
     },
 
-    // video
+    //#endregion
+
+    //#region videos
+
     getterVideoList: state => tabValue => {
         return state.VideoList.find((videoInfo) => { return videoInfo.tab == tabValue })
     }
+
+    //#endregion
 }

@@ -67,7 +67,7 @@
 
 import record from '../../components/record'
 import sound from '../../components/sound'
-import { CHATSERVERURL } from '../../common/constant'
+import { PAPA_CHATSERVERURL } from '../../common/constant'
 
 const chatList = [
   {
@@ -349,7 +349,7 @@ export default {
       console.log('播放结束')
     })
     this.innerAudioContext.onWaiting(() => {
-      console.log('waiting')
+      console.log('等待中...')
     })
     this.innerAudioContext.onError((res) => {
       this.audioStop()
@@ -358,7 +358,7 @@ export default {
   },
   onLoad() {
     wx.connectSocket({
-      url: CHATSERVERURL,
+      url: PAPA_CHATSERVERURL,
       header: {
         'content-type': 'application/json'
       }
@@ -366,14 +366,11 @@ export default {
     wx.onSocketMessage((res) => {
       console.log('接受到服务器内容: ', res)
       var result = JSON.parse(res.data)
-      if (result.errCode > 0) {
-        this.popupTip("内容涉及敏感信息!")
-      }
-      if (!result.msg) {
+      if (result.message !== '') {
         this.chatList.push({
           speaker: '2',
           type: '1',
-          chat: '&nbsp' + result.msg + '&nbsp'
+          chat: result.message
         })
       }
     })
@@ -402,7 +399,8 @@ export default {
         if (message != null && message != '' && typeof message != 'undefined') {
           this.sendWebSocketMessage(message)
         } else {
-          this.popupTip("发送内容不能为空")
+          // this.popupTip("发送内容不能为空")
+          this.sendWebSocketMessage('test')
         }
       }
     },
@@ -490,7 +488,7 @@ export default {
             }) : this.chatList.push({
               speaker: '1',
               type: '1',
-              chat: '&nbsp' + content + '&nbsp'
+              chat: content
             })
             this.recordInfo = null
             this.inputValue = ''
