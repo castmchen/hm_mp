@@ -2,6 +2,7 @@
   <div id="castm-home">
     <div id="castm-main">
       <home :currentTab="currentTab"
+            :userInfo="userInfo"
             @navigateToPage="navigateToPage"></home>
       <notification :currentTab="currentTab"></notification>
       <service :currentTab="currentTab"></service>
@@ -42,13 +43,13 @@
 </template>
 
 <script>
-import global from '../../common/global'
-import JIMInit from '../../common/jm.InitService'
+// import JIMService from '../../common/jm.InitService'
 import home from '../../components/home'
 import notification from '../../components/notification'
 import service from '../../components/service'
 import { notificationService } from '../../service/notificationService'
 import { mapActions, mapGetters } from 'vuex'
+import wechat from '../../common/wechat.authorise'
 
 export default {
   data: {
@@ -70,30 +71,50 @@ export default {
       this.isLoadingFlag = true
       wx.navigateTo({ url })
     },
+    checkLoginStatus() {
+      return new Promise(async (resolve, reject) => {
+        if (!this.userInfo) {
+          resolve(false)
+        } else {
+          await wechat.checkSessionValid(resolve).catch(err => {
+            console.error(`An error has been occured while checking session validity, Details: ${err}`)
+            wx.navigateTo({ url: '/pages/authorise/main' })
+          })
+        }
+      })
+    },
+    // initJIM() {
+    //   return new Promise(async (resolve, reject) => {
+    //     await JIMService.JMInit(resolve, this.userInfo)
+    //   }).catch(err => {
+    //     console.error(`An error has been occured while initing JMessage, Details: ${err}`)
+    //   })
+    // },
     ...mapActions([
-      "update_notification",
-      "get_notificationById",
-      "remove_notification",
-      "add_notification"
+      'update_notification',
+      'get_notificationById',
+      'remove_notification',
+      'add_notification',
+      'update_userInfo'
     ])
   },
   computed: {
-    ...mapGetters(["notificationCount"])
+    ...mapGetters(['notificationCount', 'userInfo'])
   },
   onLoad() {
-    if (global.username === '') {
-      wx.navigateTo({ url: '../authorise/main' })
-    }
-    JIMInit.JMInit()
-
+  },
+  created() {
     this.isLoadingFlag = true
     this.currentTab = "home"
     this.initNotifications()
   },
-  created() {
-  },
   onShow() {
-    this.isLoadingFlag = false
+    this.checkLoginStatus().then(isLogin => {
+      if (!isLogin) {
+        wx.navigateTo({ url: '/pages/authorise/main' })
+      }
+      this.isLoadingFlag = false
+    })
   },
   components: { home, notification, service }
 }
@@ -107,12 +128,13 @@ export default {
 }
 
 #castm-home #castm-main {
-  position: absolute;
+  /* position: absolute;
   top: 0;
   left: 0;
   z-index: -999;
   width: 100%;
-  height: 100%;
+  height: 100%; 
+  display: flex; */
   background: rgba(248, 248, 225, 0.6);
 }
 

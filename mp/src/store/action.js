@@ -3,7 +3,7 @@ import * as constant from './constant'
 export default {
     //#region userInfo
 
-    update_uerInfo({ commit }, userInfo) {
+    update_userInfo({ commit }, userInfo) {
         commit(constant.UPDATE_USERINFO, userInfo)
     },
 

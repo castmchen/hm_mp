@@ -2,7 +2,7 @@ export default {
     //#region userInfo
 
     userInfo: state => {
-        return state.userInfo
+        return state.UserInfo
     },
 
     //#endregion

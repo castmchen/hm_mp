@@ -2,15 +2,19 @@
 
 export const JM_APPKEY = "7037d4a61f1d7699c8263f57"
 export const JM_MASTERSECRET = "b05b46a8e9a5eb72ccab1121"
-export const JM_RANDOM_STR = "chenqiangchenqiangchenqiang"
-export const JM_USER_PASSWORD = "castmchen"
+export const JM_RANDOM_STR = "404"
+    // export const JM_APPKEY = "4f7aef34fb361292c566a1cd"
+    // export const JM_MASTERSECRET = "b05b46a8e9a5eb72ccab1121"
+    // export const JM_RANDOM_STR = "404"
+export const JM_USER_PASSWORD = "1234567890"
 
 //#endregion
 
 //#region www.lovepapa.site
 
 export const PAPA_CHATSERVERURL = 'wss://www.lovepapa.site/chat'
-export const PAPA_LOGIN_URL = "https://www.lovepapa.site/loginwechat"
+export const PAPA_LOGIN_URL = "https://www.lovepapa.site/wechat/login"
+export const PAPA_CHECKANDUPDATEUSER_URL = "https://www.lovepapa.site/wechat/checkandupdateuser"
 
 //#endregion
 

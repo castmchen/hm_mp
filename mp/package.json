@@ -11,6 +11,7 @@
     "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {
+    "crypto-js": "^3.1.9-1",
     "flyio": "^0.6.1",
     "iview-weapp": "^2.0.0",
     "mpvue": "^1.0.11",

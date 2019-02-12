@@ -6,7 +6,19 @@ export default {
         return this.callback(global.JIM.login(loginObj), success, error, timeout)
     },
     register(registerObj, success, error, timeout) {
-        return this.callback(global.JIM.register(registerObj, success, error, timeout))
+        return this.callback(global.JIM.register(registerObj), success, error, timeout)
+    },
+    getUserInfoByUserName(userInfo, success, error, timeout) {
+        return this.callback(global.JIM.getUserInfo(userInfo), success, error, timeout)
+    },
+    updateUserInfo(userInfo, success, error, timeout) {
+        return this.callback(global.JIM.updateSelfInfo(userInfo), success, error, timeout)
+    },
+    checkIfLogin() {
+        return this.callback(global.JIM.isLogin())
+    },
+    checkIfInit() {
+        return this.callback(global.JIM.isInit())
     },
     callback(obj, ...args) {
         return new Promise(resolve => {
@@ -30,6 +42,8 @@ export default {
                     }
                     resolve({ code: -2 })
                 })
+            } else if (obj === false) {
+                resolve(obj)
             }
         })
     },

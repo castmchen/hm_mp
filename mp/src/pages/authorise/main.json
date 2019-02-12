@@ -1,4 +1,6 @@
 {
     "navigationBarTitleText": "授权",
-    "usingComponents": {}
+    "usingComponents": {
+        "i-spin": "../../static/iview/spin/index"
+    }
 }
