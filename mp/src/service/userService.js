@@ -1,3 +1,6 @@
+import fly from '../utils/fly'
+import { PAPA_GETUPDATEUSERLOCATION_URL } from '../common/constant'
+
 const profileInfo = {
     id: 1,
     avatar: 'https://i.loli.net/2017/08/21/599a521472424.jpg',
@@ -7,13 +10,14 @@ const profileInfo = {
     latitude: 1
 }
 
-export const profileService = {
-    getProfileById(id) {
+export default {
+    getUserById(id) {
         return new Promise((resolve, reject) => {
             resolve(profileInfo)
         })
     },
-    addToFavorite() {
-
+    addToFavorite() {},
+    updateUserLocation(location) {
+        fly.request(PAPA_GETUPDATEUSERLOCATION_URL, location, { method: 'post', timeout: 18000 })
     }
 }

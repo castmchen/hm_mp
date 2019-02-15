@@ -17,5 +17,10 @@
         "navigationBarBackgroundColor": "#fff",
         "navigationBarTitleText": "逗斗",
         "navigationBarTextStyle": "black"
+    },
+    "permission": {
+        "scope.userLocation": {
+            "desc": "♥ 为了准确的为您提供服务，请允许访问您的地理位置"
+        }
     }
 }

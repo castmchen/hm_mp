@@ -67,7 +67,7 @@
 
 import record from '../../components/record'
 import sound from '../../components/sound'
-import { PAPA_CHATSERVERURL } from '../../common/constant'
+import { PAPA_CHATSERVER_URL } from '../../common/constant'
 
 const chatList = [
   {
@@ -358,7 +358,7 @@ export default {
   },
   onLoad() {
     wx.connectSocket({
-      url: PAPA_CHATSERVERURL,
+      url: PAPA_CHATSERVER_URL,
       header: {
         'content-type': 'application/json'
       }

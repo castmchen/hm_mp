@@ -1,10 +1,12 @@
 <template>
   <div id="castm-dating">
-    <div id="castm-operate">
-      <i-icon type="browse_fill"
-              size="50"
-              color="rgba(30, 54, 42, 1)"
-              @click="navigateToSearch('../search/main')" />
+    <div id="castm-search">
+      <div>
+        <i-icon type="browse_fill"
+                size="50"
+                color="#ffffff"
+                @click="navigateToSearch('../search/main')" />
+      </div>
     </div>
 
     <div id="castm-contactList">
@@ -58,7 +60,7 @@
 
 <script>
 import background from '../../components/background'
-import { datingService } from '../../service/datingService'
+import datingService from '../../service/datingService'
 import share from '../../components/share'
 
 export default {
@@ -71,7 +73,7 @@ export default {
     }
   },
   created() {
-    this.getContactListByUserId().then((contactList) => {
+    datingService.getContactList().then(contactList => {
       this.contactList = contactList
     })
   },
@@ -82,10 +84,6 @@ export default {
     this.isShareFlag = false
   },
   methods: {
-    async getContactListByUserId(userId) {
-      let result = await datingService.getContactList(userId)
-      return result
-    },
     showMoreActions(contactInfo) {
       this.selectedContact = contactInfo
     },
@@ -133,52 +131,60 @@ export default {
   font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
   font-size: 16px;
   background: #ffffff;
-  position: absolute;
-  width: 100%;
-  min-height: 100%;
-  color: #80848f;
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  align-items: center;
+  align-content: space-around;
 }
-#castm-dating #castm-operate {
-  /* width: 40px;
-  margin-left: calc(50% - 15px);
-  margin-top: 15px;
-  border: #ffc95c 1rpx solid;
-  border-radius: 30%;
-  box-shadow: #ffc95c 0px 0px 30px 10px; */
+
+#castm-dating #castm-search {
+  width: 100%;
   text-align: center;
+  height: 70px;
+}
+
+#castm-dating #castm-search > div {
+  display: inline-block;
+  height: 50px;
+  width: 50px;
+  background: rgba(30, 54, 42, 0.8);
+  box-shadow: rgba(30, 54, 42, 0.5) 10px 10px 10px;
+  border-radius: 25%;
+  margin-top: 10px;
 }
 
 #castm-dating #castm-contactList {
-  position: relative;
-  display: block;
-  box-shadow: darkgray 0px 0px 30px 0px;
-  margin-top: 15px;
+  box-shadow: rgba(30, 54, 42, 0.5) 5px 5px 20px 0px;
+  width: 100%;
 }
 
 #castm-dating #castm-contactList .contact-row- {
   line-height: 60px;
   border-bottom: #e9eaec 1px solid;
+  display: flex;
+  display: -webkit-flex;
+  width: 100%;
 }
 
 #castm-dating #castm-contactList > .contact-row- > .contact-row-Left {
-  display: inline-block;
-  margin-left: 10px;
-  width: 70%;
+  padding-left: 15px;
+  flex-grow: 4;
 }
 
 #castm-dating #castm-contactList > .contact-row- > .contact-row-right {
-  display: inline-block;
-  height: 100%;
-  width: 27%;
-  background: rgba(30, 54, 42, 0.8);
+  width: 20%;
+  background: rgba(30, 54, 42, 0.7);
   color: #ffffff;
+  text-align: center;
 }
 
-#castm-dating #castm-contactList > .contact-row- > .contact-row-right > i-icon {
+/*#castm-dating #castm-contactList > .contact-row- > .contact-row-right > i-icon {
   height: 100%;
   cursor: pointer;
   margin-left: 20%;
-}
+} */
 
 i-drawer i-icon {
   display: block;

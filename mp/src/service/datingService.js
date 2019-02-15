@@ -1,3 +1,5 @@
+import JIMService from '../common/jm.operationService'
+
 var contactArray = [{
         id: 1,
         name: 'alice',
@@ -58,11 +60,24 @@ var contactArray = [{
         latitude: 1
     }
 ]
-export const datingService = {
-    getContactList(userId) {
-        return new Promise((resolve, reject) => {
-            resolve(contactArray)
+
+export default {
+    async getContactList(userId) {
+        var result = await new Promise(async(resolve, reject) => {
+            const friendListCallback = await JIMService.getFriendList()
+            var friendList = []
+            friendListCallback.forEach(p => {
+                friendList.push({
+                    id: p.username,
+                    name: p.nickname,
+                    avatar: p.avatar,
+                    city: p.region,
+                    address: p.address
+                })
+            })
+            resolve(friendList)
         })
+        return result
     },
     removeSpecifiedContact(contactInfo) {
         return new Promise((resolve, reject) => {

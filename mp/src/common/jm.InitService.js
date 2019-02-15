@@ -38,11 +38,11 @@ async function onInitSuccessful(resolve, currentUser, isRecursiveFlag) {
         if (loginCallbackData.code == 880103 || loginCallbackData.code == 880203) {
             const registerInfo = {
                 username,
-                nickname: username,
+                nickname: currentUser.nickName,
                 password: JM_USER_PASSWORD,
                 gender: currentUser.gender,
-                region: currentUser.country,
-                address: currentUser.province + currentUser.city,
+                region: currentUser.city,
+                address: `${currentUser.country}\\${currentUser.province}\\${currentUser.city}`,
                 extras: {
                     avatar: currentUser.avatarUrl
                 }
@@ -66,7 +66,7 @@ async function onInitSuccessful(resolve, currentUser, isRecursiveFlag) {
             that.JMInit(currentUser)
         })
         console.log('---------------JIM login successfully----------------')
-        global.username = loginCallbackData.user
+        global.username = loginCallbackData.userName
         return resolve(true)
     }
 }

@@ -1,38 +1,75 @@
 <template>
   <div id="castm-search">
     <map id="castm-map"
-         longitude="121.6147600000"
-         latitude="38.9136900000"
+         :longitude="locationInfo.lng"
+         :latitude="locationInfo.lat"
          scale="16"
          :subkey="subkey"
          :markers="markers"
          @markertap="clickMarker($event)"></map>
+    <i-spin size="large"
+            v-if="isLoadingFlag"
+            fix></i-spin>
   </div>
 </template>
 <script>
-import { searchService } from "../../service/searchService"
+import searchService from '../../service/searchService'
+import wechatService from '../../common/wechat.authorise'
+import { TENCENTMAP_PRIVATE_APPKEY } from '../../common/constant'
+import { mapGetters } from 'vuex'
+import userService from '../../service/userService'
 
 export default {
   data() {
     return {
-      subkey: 'IT5BZ-UVOWD-6EX4L-PX5ZR-FMWA5-HBF3U',
-      markers: []
+      subkey: TENCENTMAP_PRIVATE_APPKEY,
+      markers: [],
+      locationInfo: { lng: 121.6147600000, lat: 38.9136900000 },
+      isLoadingFlag: false
     }
   },
-  onReady() {
-    this.getUserInformations().then((p) => {
-      this.markers = p
+  created() {
+  },
+  onShow() {
+    this.isLoadingFlag = true
+    wechatService.getUserLocation(this.userInfo.userName).then(locationCallback => {
+      if (locationCallback) {
+        console.log(locationCallback)
+        if (this.checkIsCNLocation(locationCallback.lng, locationCallback.lat)) {
+          if (locationCallback.isNewLocation) {
+            userService.updateUserLocation({ userId: this.userInfo.userName, lng: locationCallback.lng, lat: locationCallback.lat })
+          }
+          this.locationInfo = locationCallback
+        }
+
+        return searchService.getNearbyContacts(this.locationInfo.lng, this.locationInfo.lat)
+      }
+    }).then(markerCallback => {
+      this.markers = markerCallback
+      this.isLoadingFlag = false
+    }).catch(err => {
+      console.error(`An error has been occured while getting user location information, Details: ${err}`)
+      wx.showToast({
+        title: '页面初始化失败，请稍后重试!',
+        icon: 'none'
+      })
+      setTimeout(() => {
+        this.isLoadingFlag = false
+        wx.navigateBack({ delta: 1 })
+      }, 2000)
     })
   },
   methods: {
-    async getUserInformations() {
-      let result = await searchService.findUsersbyCurrentLocation(1, 1)
-      return result
-    },
     clickMarker(e) {
       let url = '../profile/main?id=' + e.mp.markerId
       wx.navigateTo({ url })
+    },
+    checkIsCNLocation(lng, lat) {
+      return lng > 73.66 && lng < 135.05 && lat > 3.86 && lat < 53.55
     }
+  },
+  computed: {
+    ...mapGetters(['userInfo'])
   }
 }
 </script>

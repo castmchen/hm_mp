@@ -144,11 +144,6 @@ export default {
 
 <style scoped>
 .voice-style {
-  /* margin-top: 400px;
-  display: flex;
-  position: relative;
-  flex-direction: column;
-  align-items: center; */
   position: absolute;
   height: 100%;
   width: 100%;

@@ -1,20 +1,24 @@
 //#region JMessage
 
-export const JM_APPKEY = "7037d4a61f1d7699c8263f57"
-export const JM_MASTERSECRET = "b05b46a8e9a5eb72ccab1121"
-export const JM_RANDOM_STR = "404"
+export const JM_APPKEY = '7037d4a61f1d7699c8263f57'
+export const JM_MASTERSECRET = 'b05b46a8e9a5eb72ccab1121'
+export const JM_RANDOM_STR = '404'
     // export const JM_APPKEY = "4f7aef34fb361292c566a1cd"
     // export const JM_MASTERSECRET = "b05b46a8e9a5eb72ccab1121"
-    // export const JM_RANDOM_STR = "404"
-export const JM_USER_PASSWORD = "1234567890"
+export const JM_USER_PASSWORD = '1234567890'
 
 //#endregion
 
 //#region www.lovepapa.site
 
-export const PAPA_CHATSERVERURL = 'wss://www.lovepapa.site/chat'
-export const PAPA_LOGIN_URL = "https://www.lovepapa.site/wechat/login"
-export const PAPA_CHECKANDUPDATEUSER_URL = "https://www.lovepapa.site/wechat/checkandupdateuser"
+const PAPA_SERVER_URL = 'https://www.lovepapa.site'
+export const PAPA_CHATSERVER_URL = 'wss://www.lovepapa.site/chat'
+export const PAPA_LOGIN_URL = `${PAPA_SERVER_URL}/wechat/login`
+export const PAPA_CHECKANDUPDATEUSER_URL = `${PAPA_SERVER_URL}/wechat/checkandupdateuser`
+export const PAPA_GETUSERBYID_URL = `${PAPA_SERVER_URL}/user/getuserbyid`
+export const PAPA_GETUSERBYSESESSIONID_URL = `${PAPA_SERVER_URL}/user/getuserbysessionid`
+export const PAPA_GETUPDATEUSERLOCATION_URL = `${PAPA_SERVER_URL}/user/updateuserlocation`
+export const PAPA_GETUSERLOCATION_URL = `${PAPA_SERVER_URL}/user/getuserlocation`
 
 //#endregion
 
@@ -52,6 +56,17 @@ export function buildTargetUrlByNumber(url, number) {
     this.number = number
     return url
 }
+
+//#endregion
+
+//#region tencent map
+
+const TENCENTMAP_COMMON_APPKEY = 'd84d6d83e0e51e481e50454ccbe8986b'
+export const TENCENTMAP_PRIVATE_APPKEY = 'IT5BZ-UVOWD-6EX4L-PX5ZR-FMWA5-HBF3U'
+export function buildGetLocationUrl(place) {
+    return encodeURI(`https://apis.map.qq.com/ws/place/v1/search?keyword=${place}&key=${TENCENTMAP_COMMON_APPKEY}&boundary=region(${place},0)`)
+}
+export const TENCENTMAP_API_GETLOCATION = 'https://apis.map.qq.com/ws/place/v1/search?keyword=大连市&key=d84d6d83e0e51e481e50454ccbe8986b&boundary=region(大连市,0)'
 
 //#endregion
 

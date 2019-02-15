@@ -1,5 +1,5 @@
 import fly from '../utils/fly'
-import { PAPA_LOGIN_URL, PAPA_CHECKANDUPDATEUSER_URL } from '../common/constant'
+import { PAPA_LOGIN_URL, PAPA_CHECKANDUPDATEUSER_URL, PAPA_GETUSERLOCATION_URL } from './constant'
 
 function showToast(content) {
     wx.showToast({
@@ -52,6 +52,49 @@ function updateUserInfo(userInfo) {
     return fly.request(PAPA_CHECKANDUPDATEUSER_URL, { userInfo }, { method: 'post', timeout: 180000 })
 }
 
+async function getLocationFromApi(resolve, userId) {
+    const targetUrl = `${PAPA_GETUSERLOCATION_URL}?userId=${userId}`
+    var locationCallbackData = await fly.request(targetUrl, null, { method: 'get', timeout: 180000 })
+    console.log(locationCallbackData)
+    if (locationCallbackData && locationCallbackData.data) {
+        return resolve(locationCallbackData.data)
+    }
+    resolve(false)
+}
+
+function getUserLocationFromWechat(resolve, userId) {
+    wx.getLocation({
+        type: 'wgs84',
+        success(res) {
+            const locationInfo = { lng: res.longitude, lat: res.latitude, isNewLocation: true }
+            return resolve(locationInfo)
+        },
+        fail() {
+            getLocationFromApi(resolve, userId)
+        }
+    })
+}
+
+function getUserLocation(resolve, userId) {
+    wx.getSetting({
+        success(res) {
+            if (res.authSetting['scope.userLocation']) {
+                getUserLocationFromWechat(resolve, userId)
+            } else {
+                wx.authorize({
+                    scope: 'scope.userLocation',
+                    success() {
+                        getUserLocationFromWechat(resolve, userId)
+                    },
+                    fail() {
+                        getLocationFromApi(resolve, userId)
+                    }
+                })
+            }
+        }
+    })
+}
+
 export default {
     async login() {
         var code = await getAuthCode()
@@ -77,24 +120,12 @@ export default {
         }
     },
     async checkSessionValid(resolve) {
-        // const that = this
-        // var result = await new Promise(async(resolve, reject) => {
-        //     wx.checkSession({
-        //         success() {
-        //             resolve(true)
-        //         },
-        //         fail() {
-        //             resolve(false)
-        //                 that.login().then(async result => {
-        //                     var userCallback = await that.getUserInfo(result.sessionId)
-        //                     var userInfo = { sessionId: result.sessionId, userName: userCallback.nickName, gender: userCallback.gender, avatarUrl: userCallback.avatarUrl, country: userCallback.country, province: userCallback.province, city: userCallback.city }
-        //                     resolve(userInfo)
-        //                 })
-        //         }
-        //     })
-        // })
-        // return result
-
         await wx.checkSession({ success() { resolve(true) }, fail() { resolve(false) } })
+    },
+    async getUserLocation(userId) {
+        var result = await new Promise(async(resolve, reject) => {
+            await getUserLocation(resolve, userId)
+        })
+        return result
     }
 }

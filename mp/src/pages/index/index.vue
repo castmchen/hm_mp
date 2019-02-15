@@ -44,12 +44,12 @@
 
 <script>
 // import JIMService from '../../common/jm.InitService'
+// import wechat from '../../common/wechat.authorise'
 import home from '../../components/home'
 import notification from '../../components/notification'
 import service from '../../components/service'
 import { notificationService } from '../../service/notificationService'
 import { mapActions, mapGetters } from 'vuex'
-import wechat from '../../common/wechat.authorise'
 
 export default {
   data: {
@@ -71,23 +71,17 @@ export default {
       this.isLoadingFlag = true
       wx.navigateTo({ url })
     },
-    checkLoginStatus() {
-      return new Promise(async (resolve, reject) => {
-        if (!this.userInfo) {
-          resolve(false)
-        } else {
-          await wechat.checkSessionValid(resolve).catch(err => {
-            console.error(`An error has been occured while checking session validity, Details: ${err}`)
-            wx.navigateTo({ url: '/pages/authorise/main' })
-          })
-        }
-      })
-    },
-    // initJIM() {
+    // checkLoginStatus() {
     //   return new Promise(async (resolve, reject) => {
-    //     await JIMService.JMInit(resolve, this.userInfo)
-    //   }).catch(err => {
-    //     console.error(`An error has been occured while initing JMessage, Details: ${err}`)
+    //     if (!this.userInfo) {
+    //       resolve(false)
+    //     }
+    //      else {
+    //       await wechat.checkSessionValid(resolve).catch(err => {
+    //         console.error(`An error has been occured while checking session validity, Details: ${err}`)
+    //         wx.navigateTo({ url: '/pages/authorise/main' })
+    //       })
+    //     }
     //   })
     // },
     ...mapActions([
@@ -106,15 +100,20 @@ export default {
   created() {
     this.isLoadingFlag = true
     this.currentTab = "home"
-    this.initNotifications()
   },
   onShow() {
-    this.checkLoginStatus().then(isLogin => {
-      if (!isLogin) {
-        wx.navigateTo({ url: '/pages/authorise/main' })
-      }
-      this.isLoadingFlag = false
-    })
+    // this.checkLoginStatus().then(isLogin => {
+    //   if (!isLogin) {
+    //     wx.navigateTo({ url: '/pages/authorise/main' })
+    //   }
+    //   this.isLoadingFlag = false
+    // })
+    if (!this.userInfo) {
+      wx.navigateTo({ url: '/pages/authorise/main' })
+      return
+    }
+    this.initNotifications()
+    this.isLoadingFlag = false
   },
   components: { home, notification, service }
 }

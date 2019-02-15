@@ -174,10 +174,12 @@ const paoyLocations = [{
         }
     }
 ]
-export const searchService = {
-    findUsersbyCurrentLocation(longitude, latitude) {
-        return new Promise((resolve, reject) => {
-            resolve(paoyLocations)
-        })
+export default {
+    async getNearbyContacts(longitude, latitude) {
+        // const result = new Promise((resolve, reject) => {
+        //     resolve(paoyLocations)
+        // })
+        // debugger
+        return paoyLocations
     }
 }

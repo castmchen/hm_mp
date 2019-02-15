@@ -51,7 +51,7 @@
   </div>
 </template>
 <script>
-import { profileService } from '../../service/profileService'
+import userService from '../../service/userService'
 import share from '../../components/share'
 
 export default {
@@ -70,12 +70,11 @@ export default {
     this.getProfileById(contactId).then((p) => {
       this.profile = p
     })
+    userService.getUserById(contactId).then(user => {
+      this.profile = user
+    })
   },
   methods: {
-    async getProfileById(id) {
-      let result = await profileService.getProfileById(id)
-      return result
-    },
     navigateToMatch(url) {
       let targetUrl = url + '?contact=' + JSON.stringify(this.profile)
       wx.navigateTo({ url: targetUrl })

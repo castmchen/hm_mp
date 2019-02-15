@@ -1,4 +1,6 @@
 {
-    "navigationBarTitleText": "寻找有缘人",
-    "usingComponents": {}
+    "navigationBarTitleText": "寻找撩友",
+    "usingComponents": {
+        "i-spin": "../../static/iview/spin/index"
+    }
 }

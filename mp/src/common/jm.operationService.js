@@ -20,6 +20,9 @@ export default {
     checkIfInit() {
         return this.callback(global.JIM.isInit())
     },
+    getFriendList(success, error, timeout) {
+        return this.callback(global.JIM.getFriendList(), success, error, timeout)
+    },
     callback(obj, ...args) {
         return new Promise(resolve => {
             if (obj && obj.onSuccess) {

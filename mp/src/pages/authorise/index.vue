@@ -39,7 +39,7 @@
 <script>
 import wechat from '../../common/wechat.authorise'
 import { mapActions } from 'vuex'
-import JIM from '../../common/jm.InitService'
+import JIMService from '../../common/jm.InitService'
 
 export default {
   data() {
@@ -49,37 +49,28 @@ export default {
     }
   },
   onLoad() {
-    // wx.getSetting({
-    //   success(res) {
-    //     if (res.authSetting['scope.userInfo']) {
-    //       wx.getUserInfo({
-    //         success(res) {
-    //           console.log(res.userInfo)
-    //         }
-    //       })
-    //     }
-    //   }
-    // })
   },
   methods: {
     getAuthorize(e) {
-      this.isLoadingFlag = true
-      wechat.login().then(async result => {
-        if (result != null && result.sessionId) {
-          var userCallback = await wechat.getUserInfo(result.sessionId)
-          var userInfo = { sessionId: result.sessionId, userName: userCallback.nickName, gender: userCallback.gender, avatarUrl: userCallback.avatarUrl, country: userCallback.country, province: userCallback.province, city: userCallback.city }
-          this.update_userInfo(userInfo)
+      if (e.mp.detail.userInfo) {
+        this.isLoadingFlag = true
+        wechat.login().then(async result => {
+          if (result != null && result.sessionId) {
+            var userCallback = await wechat.getUserInfo(result.sessionId)
+            var userInfo = { sessionId: result.sessionId, userName: result.userId, nickName: userCallback.nickName, gender: userCallback.gender, avatarUrl: userCallback.avatarUrl, country: userCallback.country, province: userCallback.province, city: userCallback.city }
+            this.update_userInfo(userInfo)
 
-          await new Promise((resolve) => {
-            JIM.JMInit(resolve, userInfo)
-          })
-          wx.navigateBack({ delta: 1 })
-        }
-        this.isLoadingFlag = false
-      }).catch(err => {
-        console.error(`An error has been occured while getting user information, Details: ${err}`)
-        this.isLoadingFlag = false
-      })
+            await new Promise((resolve) => {
+              JIMService.JMInit(resolve, userInfo)
+            })
+            wx.navigateBack({ delta: 1 })
+          }
+          this.isLoadingFlag = false
+        }).catch(err => {
+          console.error(`An error has been occured while getting user information, Details: ${err}`)
+          this.isLoadingFlag = false
+        })
+      }
     },
     ...mapActions(['update_userInfo'])
   }
