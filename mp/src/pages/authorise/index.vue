@@ -56,10 +56,9 @@ export default {
         this.isLoadingFlag = true
         wechat.login().then(async result => {
           if (result != null && result.sessionId) {
-            var userCallback = await wechat.getUserInfo(result.sessionId)
-            var userInfo = { sessionId: result.sessionId, userName: result.userId, nickName: userCallback.nickName, gender: userCallback.gender, avatarUrl: userCallback.avatarUrl, country: userCallback.country, province: userCallback.province, city: userCallback.city }
+            const userCallback = await wechat.getUserInfo(result.sessionId)
+            const userInfo = { sessionId: result.sessionId, userName: result.userId, nickName: userCallback.nickName, gender: userCallback.gender, avatarUrl: userCallback.avatarUrl, country: userCallback.country, province: userCallback.province, city: userCallback.city }
             this.update_userInfo(userInfo)
-
             await new Promise((resolve) => {
               JIMService.JMInit(resolve, userInfo)
             })
@@ -82,7 +81,7 @@ export default {
   font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
   font-size: 12px;
   color: #80848f;
-  background: rgba(248, 248, 225, 0.6);
+  background: #f8f8f9;
   position: absolute;
   height: 100%;
   width: 100%;

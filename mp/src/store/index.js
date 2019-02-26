@@ -7,8 +7,8 @@ import getters from './getter'
 Vue.use(Vuex)
 
 const state = {
-    UserInfo: null,
-    Notifications: [],
+    UserInfo: {},
+    NotificationList: [],
     NotificationCount: 0,
     VideoList: []
 }

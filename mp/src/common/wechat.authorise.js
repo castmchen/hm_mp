@@ -115,8 +115,8 @@ export default {
         var res = await updateUserInfo(postUserInfo)
         if (res.status !== 200 || typeof res.data === 'undefined' || !res.data) {
             showToast('登录失败, 请联系客服!')
-        } else {
-            return res.data
+        } else if (res.data.message === 'success') {
+            return postUserInfo.userInfo
         }
     },
     async checkSessionValid(resolve) {

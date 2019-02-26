@@ -1,6 +1,7 @@
-import * as constant from './constant'
+import constant from './constant'
 
 export default {
+
     //#region userInfo
 
     update_userInfo({ commit }, userInfo) {
@@ -45,12 +46,11 @@ export default {
 
     //#region videos
 
-    add_videoList({ commit }, videoTabInfo) {
-        commit(constant.ADD_VIDEOLIST, videoTabInfo)
-        return new Promise((resolve, reject) => { resolve('success') })
+    add_videoList({ commit }, videoTypeObj) {
+        commit(constant.ADD_VIDEOLIST, videoTypeObj)
     },
-    get_videoList({ commit }, tabValue) {
-        return commit(constant.GET_VIDEOLIST, tabValue)
+    get_videoList({ commit }, typeValue) {
+        return commit(constant.GET_VIDEOLIST, typeValue)
     }
 
     //#endregion

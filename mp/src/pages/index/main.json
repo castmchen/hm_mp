@@ -1,5 +1,5 @@
 {
-    "navigationBarTitleText": "逗斗",
+    "navigationBarTitleText": "撩聊",
     "usingComponents": {
         "i-tab-bar": "../../../static/iview/tab-bar/index",
         "i-tab-bar-item": "../../../static/iview/tab-bar-item/index",

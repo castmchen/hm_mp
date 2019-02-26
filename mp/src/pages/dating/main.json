@@ -1,5 +1,5 @@
 {
-    "navigationBarTitleText": "约一下",
+    "navigationBarTitleText": "撩聊",
     "usingComponents": {
         "i-icon": "../../static/iview/icon/index",
         "i-avatar": "../../static/iview/avatar/index",

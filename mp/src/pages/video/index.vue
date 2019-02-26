@@ -1,18 +1,23 @@
 <template>
-  <div>
-    <div id="tabs">
-      <i-tabs :current="current"
+  <div id="castm-video">
+    <div id="castm-header">
+      <i-tabs :current="currentVideoTypeObj.tab"
               color="#f759ab"
               scroll
-              @change="handleChangeScroll">
-        <i-tab v-for="tabInfo in tabs"
-               :key="tabInfo.tab"
-               :title="tabInfo.title"></i-tab>
+              @change="changeVideoTab">
+        <i-tab v-for="videoType in videoTypeList"
+               :key="videoType.tab"
+               :title="videoType.title"
+               :id="videoType.tab"></i-tab>
       </i-tabs>
     </div>
 
-    <div id="videos">
-      <div v-for="(videoInfo, index) in videoList"
+    <i-load-more v-if="isLoadingFlag && !isBottomFlag" />
+    <i-divider content="加载已经完成,没有更多数据"
+               v-if="isNomoreFlag && !isBottomFlag"></i-divider>
+
+    <div id="castm-content">
+      <div v-for="(videoInfo, index) in videoObjOfCurrentTab.videos"
            :key="index">
         <span>{{videoInfo.title}}</span>
         <video :id="index"
@@ -23,173 +28,162 @@
       </div>
     </div>
 
-    <i-load-more v-if="flagInfo.isLoadingFlag" />
-    <i-toast id="toast" />
+    <i-load-more v-if="isLoadingFlag && isBottomFlag" />
     <i-divider content="加载已经完成,没有更多数据"
-               v-if="flagInfo.dividerFlag"></i-divider>
+               v-if="isNomoreFlag && isBottomFlag"></i-divider>
   </div>
 </template>
 
 <script>
-import { tabs } from '../../common/videoTabs'
-import * as constant from '../../common/constant'
+import { VIDEOTYPELIST, getRealPlayUrl } from '../../common/constant'
 import { getVideoList } from '../../service/videoService'
 import { mapActions, mapGetters } from 'vuex'
 
-const { $Toast } = require('../../../static/iview/base/index.js')
-var flagInfo = { isLoadingFlag: false, dividerFlag: false, httpFlag: false }
 export default {
   data() {
     return {
-      current: tabs[0].tab,
-      tabs: tabs,
-      flagInfo: flagInfo,
-      videoList: [],
-      count: 1
+      currentVideoTypeObj: VIDEOTYPELIST[0],
+      videoTypeList: VIDEOTYPELIST,
+      videoObjOfCurrentTab: {},
+      isLoadingFlag: false,
+      isNomoreFlag: false,
+      isBottomFlag: false
     }
   },
   methods: {
-    handleChangeScroll(e) {
-      if (this.flagInfo.httpFlag) {
-        return
-      }
-      this.flagInfo.dividerFlag = false
-      this.current = e.target.key
-      this.initVideoList()
-    },
-    initVideoList(refresh) {
-      if (this.flagInfo.httpFlag) {
-        return
-      }
+    changeVideoTab(e) {
+      this.isLoadingFlag = this.isLoadingFlag ? !this.isLoadingFlag : this.isLoadingFlag
+      this.isNomoreFlag = this.isNomoreFlag ? !this.isNomoreFlag : this.isNomoreFlag
 
-      this.showFloat()
-      var that = this
-      let currentVideoInfo = this.getterVideoList(this.current)
-      if (currentVideoInfo == null || currentVideoInfo.videos == null || currentVideoInfo.videos.length === 0) {
-        this.count = 1
-        this.videoList = []
+      const selectedVideoType = this.videoTypeList.find(videoTypeInfo => { return videoTypeInfo.tab == e.mp.detail.key })
+      this.currentVideoTypeObj = selectedVideoType
+      const selectedVideoObj = this.getterVideoList(selectedVideoType.title)
+      if (selectedVideoObj != null && typeof selectedVideoObj != 'undefined' && selectedVideoObj.videos.length) {
+        this.videoObjOfCurrentTab = selectedVideoObj
       } else {
-        if (!refresh) {
-          this.videoList = []
-          this.videoList = currentVideoInfo.videos
-          this.hideFloat()
-          return
-        }
-        this.count = currentVideoInfo.count + 1
-      }
-      this.getVideoListByApi(this.current).then(() => {
-        that.videoList = that.getterVideoList(that.current).videos
-        this.hideFloat()
-      })
-    },
-    async getVideoListByApi(tabValue) {
-      var that = this
-      let targetUrl = this.getTargetUrl(tabValue, this.count)
-      if (targetUrl != '') {
-        try {
-          var response = await getVideoList(targetUrl)
-          var videoList = response.result
-          if (videoList != null && typeof videoList != 'undefined' && videoList.length > 0) {
-            await that.add_videoList({ tab: that.current, count: that.count, videos: videoList })
-          } else {
-            that.flagInfo.dividerFlag = true
+        this.videoObjOfCurrentTab = { key: selectedVideoType.title, fetchNumber: 0, videos: [] }
+        wx.startPullDownRefresh({
+          complete: () => {
+            wx.stopPullDownRefresh()
           }
-        } catch (e) {
-          console.error('An error has occured.', e)
-          that.hideFloat()
-        }
+        })
       }
     },
-    getTargetUrl(tabValue, count) {
-      let url = this.tabs.find((tabInfo) => { return tabInfo.tab == tabValue }).url
-      return constant.buildTargetUrl(url, count)
-    },
-    showFloat() {
-      this.flagInfo.isLoadingFlag = true
-      this.flagInfo.httpFlag = true
-      // this.handleMask()
-    },
-    hideFloat() {
-      this.flagInfo.isLoadingFlag = false
-      this.flagInfo.httpFlag = false
-      // $Toast.hide()
+    async getVideosByApi(keyword, number, pipeType) {
+      if (typeof keyword == 'undefined' || typeof number == 'undefined') {
+        wx.showToast({
+          title: '资源获取失败, 请联系管理员!',
+          icon: 'none'
+        })
+        return
+      }
+      this.isLoadingFlag = true
+      const targetUrl = getRealPlayUrl(keyword, number)
+      await getVideoList(targetUrl).then(res => {
+        if (keyword == this.currentVideoTypeObj.title) {
+          const callbackData = res.data.result
+          if (callbackData != null && typeof callbackData != 'undefined' && callbackData.length) {
+            this.add_videoList({ key: keyword, fetchNumber: number, videos: callbackData, pipeType })
+            return true
+          } else {
+            this.isNomoreFlag = true
+            return false
+          }
+        }
+      }).then(flag => {
+        if (flag && this.videoObjOfCurrentTab.key === keyword) {
+          this.videoObjOfCurrentTab = this.getterVideoList(keyword)
+        } else {
+          this.isNomoreFlag = true
+        }
+      })
+        .catch(err => {
+          console.error(`An error has been occured while getting videos' information from url ${targetUrl}, Details: ${err}`)
+          wx.showToast({
+            title: '资源获取失败, 请联系管理员!',
+            icon: 'none'
+          })
+        })
+      this.isLoadingFlag = false
     },
     ...mapActions([
       "add_videoList"
-    ]),
-    handleMask() {
-      $Toast({
-        content: '视频加载中',
-        type: 'loading',
-        duration: 0,
-        mask: false
-      })
-    }
+    ])
   },
   computed: {
     ...mapGetters(["getterVideoList"])
   },
-  created() {
+  onLoad() {
+    this.isLoadingFlag = this.isLoadingFlag ? !this.isLoadingFlag : this.isLoadingFlag
+    this.isNomoreFlag = this.isNomoreFlag ? !this.isNomoreFlag : this.isNomoreFlag
+
+    const defaultVideoObj = this.getterVideoList(this.videoTypeList[0].title)
+    if (defaultVideoObj != null && typeof defaultVideoObj != 'undefined' && defaultVideoObj.videos.length) {
+      this.videoObjOfCurrentTab = defaultVideoObj
+    } else {
+      this.videoObjOfCurrentTab = { key: this.videoTypeList[0].title, fetchNumber: 0, videos: [] }
+      wx.startPullDownRefresh({
+        complete: () => {
+          wx.stopPullDownRefresh()
+        }
+      })
+    }
   },
-  onShow() {
-    this.initVideoList()
+  onPullDownRefresh() {
+    this.isBottomFlag = false
+    wx.stopPullDownRefresh()
+    this.getVideosByApi(this.videoObjOfCurrentTab.key, this.videoObjOfCurrentTab.fetchNumber + 1, this.isBottomFlag)
   },
   onReachBottom() {
-    this.initVideoList(true)
+    this.isBottomFlag = true
+    this.getVideosByApi(this.videoObjOfCurrentTab.key, this.videoObjOfCurrentTab.fetchNumber + 1, this.isBottomFlag)
   }
 }
 </script>
 
 <style scoped>
-#tabs {
-  /* position: fixed; */
-  top: 0px;
-  z-index: 3;
-}
-
-#videos div {
-  position: flex;
-  width: 90%;
-  border-bottom: 1px solid #dddee1;
-  margin-top: 3px;
-  margin-left: 5%;
-  border-radius: 15px;
-  text-align: left;
-  padding-bottom: 15px;
-}
-
-video {
-  /* width: 95%; */
-  /* margin-left: 1%; */
-  height: 256rpx;
-  width: 574rpx;
-  position: relative;
-  /* border-radius: 15px; */
-  sborder-bottom-left-radius: 5px;
-  border-top-left-radius: 5px;
-  border-bottom-right-radius: 5px;
-  border-top-right-radius: 5px;
-  margin-top: 20rpx;
-  margin-left: 48rpx;
-  z-index: 2;
-  display: block;
-}
-
-#videos div img {
-  position: absolute;
-  z-index: 999;
-  height: 395rpx;
-  width: 340px;
-}
-
-span {
-  font-size: 12px;
+#castm-video {
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  font-size: 18px;
   color: #80848f;
-  margin-left: 12px;
+  background: #f8f8f9;
+  width: 100%;
+  min-height: 100vh;
 }
 
-#matte {
-  z-index: 999;
+#castm-video i-load-more {
+  width: 100%;
+}
+
+#castm-video i-divider {
+  width: 100%;
+}
+
+#castm-video #castm-content {
+  width: 100%;
+}
+
+#castm-video #castm-content > div {
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-bottom: 0.5px solid #e9eaec;
+  width: 100%;
+}
+
+#castm-video #castm-content > div span {
+  font-size: 12px;
+  line-height: 20px;
+  color: black;
+}
+
+#castm-video #castm-content > div video {
+  width: 90%;
+  height: 146px;
+  border-radius: 25px;
 }
 </style>
 

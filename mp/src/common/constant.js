@@ -1,4 +1,4 @@
-//#region JMessage
+//#region jmessage
 
 export const JM_APPKEY = '7037d4a61f1d7699c8263f57'
 export const JM_MASTERSECRET = 'b05b46a8e9a5eb72ccab1121'
@@ -22,40 +22,19 @@ export const PAPA_GETUSERLOCATION_URL = `${PAPA_SERVER_URL}/user/getuserlocation
 
 //#endregion
 
-//#region  video azure
+//#region  videoapi section
 
-export const keyword = ''
-export const number = 0
-export const TENCENTVIDEOURL = 'https://castmspider.azurewebsites.net'
-export const TENCENTVIDEOURL_KEYWORD = 'https://castmspider.azurewebsites.net/api/keyword?keyword={keyword}&num={number}'
-export const TENCENTVIDEOURL_JIEJIE = 'https://castmspider.azurewebsites.net/api/keyword?keyword=伊素婉&num={number}'
-export const TENCENTVIDEOURL_GEGE = 'https://castmspider.azurewebsites.net/api/keyword?keyword=蔡徐坤&num={number}'
-export const TENCENTVIDEOURL_NONGYAO = 'https://castmspider.azurewebsites.net/api/keyword?keyword=王者荣耀搞笑&num={number}'
-export const TENCENTVIDEOURL_DAXIAN = 'https://castmspider.azurewebsites.net/api/keyword?keyword=张大仙&num={number}'
-export const TENCENTVIDEOURL_SAOBAI = 'https://castmspider.azurewebsites.net/api/keyword?keyword=骚白&num={number}'
-export const TENCENTVIDEOURL_LOL = 'https://castmspider.azurewebsites.net/api/keyword?keyword=英雄联盟搞笑&num={number}'
-export const TENCENTVIDEOURL_WOW = 'https://castmspider.azurewebsites.net/api/keyword?keyword=魔兽世界&num={number}'
-export const TENCENTVIDEOURL_CHIJI = 'https://castmspider.azurewebsites.net/api/keyword?keyword=吃鸡搞笑时刻&num={number}'
-export const TENCENTVIDEOURL_GAOXIAO = 'https://castmspider.azurewebsites.net/api/keyword?keyword=搞笑小视频&num={number}'
-
-//#endregion
-
-//#region common methods
-
-export function buildTargetUrl(url, number, keyword) {
-    var targetUrl = ''
-    if (keyword != null && url.indexOf('{keyword}') > -1) {
-        targetUrl = url.replace('{keyword}', keyword)
-    }
-    targetUrl = url.replace('{number}', number)
-    console.log(targetUrl)
-    return targetUrl
-}
-
-export function buildTargetUrlByNumber(url, number) {
-    this.number = number
-    return url
-}
+const TENCENTVIDEOURL = 'https://spidertencent.azurewebsites.net'
+export const TENCENTVIDEOURL_KEYWORD = `${TENCENTVIDEOURL}/api/keyword?keyword={keyword}&num={number}`
+export const TENCENTVIDEOURL_JIEJIE = `${TENCENTVIDEOURL}/api/keyword?keyword=伊素婉&num={number}`
+export const TENCENTVIDEOURL_GEGE = `${TENCENTVIDEOURL}/api/keyword?keyword=蔡徐坤&num={number}`
+export const TENCENTVIDEOURL_NONGYAO = `${TENCENTVIDEOURL}/api/keyword?keyword=王者荣耀搞笑&num={number}`
+export const TENCENTVIDEOURL_DAXIAN = `${TENCENTVIDEOURL}/api/keyword?keyword=张大仙&num={number}`
+export const TENCENTVIDEOURL_SAOBAI = `${TENCENTVIDEOURL}/api/keyword?keyword=骚白&num={number}`
+export const TENCENTVIDEOURL_LOL = `${TENCENTVIDEOURL}/api/keyword?keyword=英雄联盟搞笑&num={number}`
+export const TENCENTVIDEOURL_WOW = `${TENCENTVIDEOURL}/api/keyword?keyword=魔兽世界&num={number}`
+export const TENCENTVIDEOURL_CHIJI = `${TENCENTVIDEOURL}/api/keyword?keyword=吃鸡搞笑时刻&num={number}`
+export const TENCENTVIDEOURL_GAOXIAO = `${TENCENTVIDEOURL}/api/keyword?keyword=搞笑小视频&num={number}`
 
 //#endregion
 
@@ -70,6 +49,38 @@ export const TENCENTMAP_API_GETLOCATION = 'https://apis.map.qq.com/ws/place/v1/s
 
 //#endregion
 
+//#region video category section
+
+export const VIDEOTYPELIST = [
+    { tab: '1', title: '伊素婉' },
+    { tab: '2', title: '朴恩率' },
+    { tab: '3', title: '杨多顺' },
+    { tab: '4', title: '冯提莫' },
+    { tab: '5', title: '张大仙' },
+    { tab: '6', title: '骚白' },
+    { tab: '7', title: '韦神' },
+    { tab: '8', title: '农药搞笑' },
+    { tab: '9', title: '吃鸡搞笑' },
+    { tab: '10', title: '宠物搞笑' }
+]
+
+export function getRealPlayUrl(key, num) {
+    return `${TENCENTVIDEOURL}/api/keyword/?keyword=${key}&num=${num}`
+}
+// export const VIDEOTYPELIST = [
+//     { tab: '1', title: '伊素婉', url: getRealPlayUrl(this.title, 0) },
+//     { tab: '2', title: '朴恩率', url: getRealPlayUrl(this.title, 0) },
+//     { tab: '3', title: '杨多顺', url: getRealPlayUrl(this.title, 0) },
+//     { tab: '4', title: '冯提莫', url: getRealPlayUrl(this.title, 0) },
+//     { tab: '5', title: '张大仙', url: getRealPlayUrl(this.title, 0) },
+//     { tab: '6', title: '骚白', url: getRealPlayUrl(this.title, 0) },
+//     { tab: '7', title: '韦神', url: getRealPlayUrl(this.title, 0) },
+//     { tab: '8', title: '农药搞笑', url: getRealPlayUrl(this.title, 0) },
+//     { tab: '9', title: '吃鸡搞笑', url: getRealPlayUrl(this.title, 0) },
+//     { tab: '10', title: '宠物搞笑', url: getRealPlayUrl(this.title, 0) }
+// ]
+
+//#endregion
 export default {
     TENCENTVIDEOURL,
     TENCENTVIDEOURL_KEYWORD,
@@ -82,6 +93,20 @@ export default {
     TENCENTVIDEOURL_WOW,
     TENCENTVIDEOURL_CHIJI,
     TENCENTVIDEOURL_GAOXIAO,
-    buildTargetUrl,
-    buildTargetUrlByNumber
+    JM_APPKEY,
+    JM_MASTERSECRET,
+    JM_RANDOM_STR,
+    JM_USER_PASSWORD,
+    PAPA_CHATSERVER_URL,
+    PAPA_LOGIN_URL,
+    PAPA_CHECKANDUPDATEUSER_URL,
+    PAPA_GETUSERBYID_URL,
+    PAPA_GETUSERBYSESESSIONID_URL,
+    PAPA_GETUPDATEUSERLOCATION_URL,
+    PAPA_GETUSERLOCATION_URL,
+    TENCENTMAP_COMMON_APPKEY,
+    TENCENTMAP_PRIVATE_APPKEY,
+    TENCENTMAP_API_GETLOCATION,
+    VIDEOTYPELIST,
+    getRealPlayUrl
 }

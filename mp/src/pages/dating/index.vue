@@ -2,10 +2,18 @@
   <div id="castm-dating">
     <div id="castm-search">
       <div>
+        <i-icon type="coordinates_fill"
+                size="50"
+                color="#ffffff"
+                @click="navigateToSearch('../search/main')" />
+        <span>附近撩</span>
+      </div>
+      <div>
         <i-icon type="browse_fill"
                 size="50"
                 color="#ffffff"
                 @click="navigateToSearch('../search/main')" />
+        <span>八分撩</span>
       </div>
     </div>
 
@@ -52,14 +60,17 @@
                 @click="removeContact()" />
       </i-drawer>
     </div>
-    <background :isLoadingFlag="isLoadingFlag"></background>
+    <div id="castm-loading">
+      <i-spin size="large"
+              v-if="isLoadingFlag"
+              fix></i-spin>
+    </div>
     <share :isShareFlag="isShareFlag"
            @cancleShare="listenCanleShare()"></share>
   </div>
 </template>
 
 <script>
-import background from '../../components/background'
 import datingService from '../../service/datingService'
 import share from '../../components/share'
 
@@ -120,7 +131,6 @@ export default {
     }
   },
   components: {
-    background,
     share
   }
 }
@@ -130,30 +140,43 @@ export default {
 #castm-dating {
   font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
   font-size: 16px;
-  background: #ffffff;
+  background: #f8f8f9;
   display: flex;
   display: -webkit-flex;
   flex-flow: row wrap;
   justify-content: flex-start;
-  align-items: center;
   align-content: space-around;
 }
 
 #castm-dating #castm-search {
   width: 100%;
-  text-align: center;
-  height: 70px;
+  height: 120px;
+  display: flex;
+  display: -webkit-flex;
+  flex-flow: row nowrap;
+  justify-content: space-around;
+  align-items: center;
+  border-bottom: 0.5px solid rgba(30, 54, 42, 1);
+  background: rgba(30, 54, 42, 0.4);
 }
 
 #castm-dating #castm-search > div {
-  display: inline-block;
   height: 50px;
   width: 50px;
-  background: rgba(30, 54, 42, 0.8);
-  box-shadow: rgba(30, 54, 42, 0.5) 10px 10px 10px;
+  background: rgba(30, 54, 42, 0.7);
+  box-shadow: rgba(30, 54, 42, 0.4) 5px 5px 5px;
   border-radius: 25%;
-  margin-top: 10px;
+  margin-top: -15px;
 }
+
+#castm-dating #castm-search > div span {
+  line-height: 40px;
+  color: #ffffff;
+}
+
+/* #castm-dating #castm-search > div:last-child {
+  box-shadow: rgba(30, 54, 42, 0.5) -5px 5px 5px;
+} */
 
 #castm-dating #castm-contactList {
   box-shadow: rgba(30, 54, 42, 0.5) 5px 5px 20px 0px;

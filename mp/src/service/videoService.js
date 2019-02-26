@@ -1,10 +1,10 @@
 import fly from '../utils/fly'
 
-export const getVideoList = (url) => {
+export function getVideoList(url) {
     try {
-        return fly.request(url, null, { method: 'get' })
-    } catch (e) {
-        console.error('An error has occured when get video_gage', e)
+        return fly.request(url, null, { method: 'get', timeout: 180000 })
+    } catch (err) {
+        console.err(`An error has been occured while getting videos' information from url ${url}, Details: ${err}`)
     }
 }
 

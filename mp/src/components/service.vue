@@ -1,6 +1,6 @@
 <template>
-  <div id="service"
-       v-if="currentTab == 'service'">
+  <div id="service">
+  service works.
   </div>
 </template>
 
