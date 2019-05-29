@@ -2,16 +2,15 @@
     "cloud": true,
     "pages": [
         "pages/index/main",
-        "pages/authorise/main",
-        "pages/notification/main",
         "pages/dating/main",
+        "pages/authorise/main",
+        "pages/chat/main",
         "pages/joke/main",
         "pages/game/main",
         "pages/video/main",
         "pages/search/main",
         "pages/logs/main",
-        "pages/profile/main",
-        "pages/chat/main"
+        "pages/profile/main"
     ],
     "window": {
         "backgroundTextStyle": "light",

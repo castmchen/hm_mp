@@ -512,7 +512,7 @@ export default {
 <style scoped>
 #castm-chat {
   font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
-  font-size: 16px;
+  font-size: 14px;
   background: rgba(248, 248, 225, 0.2);
   position: absolute;
   width: 100%;

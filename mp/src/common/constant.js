@@ -19,6 +19,7 @@ export const PAPA_GETUSERBYID_URL = `${PAPA_SERVER_URL}/user/getuserbyid`
 export const PAPA_GETUSERBYSESESSIONID_URL = `${PAPA_SERVER_URL}/user/getuserbysessionid`
 export const PAPA_GETUPDATEUSERLOCATION_URL = `${PAPA_SERVER_URL}/user/updateuserlocation`
 export const PAPA_GETUSERLOCATION_URL = `${PAPA_SERVER_URL}/user/getuserlocation`
+export const PAPA_GETNEARBYUSERS_URL = `${PAPA_SERVER_URL}/user/getnearbyusers`
 
 //#endregion
 
@@ -104,6 +105,7 @@ export default {
     PAPA_GETUSERBYSESESSIONID_URL,
     PAPA_GETUPDATEUSERLOCATION_URL,
     PAPA_GETUSERLOCATION_URL,
+    PAPA_GETNEARBYUSERS_URL,
     TENCENTMAP_COMMON_APPKEY,
     TENCENTMAP_PRIVATE_APPKEY,
     TENCENTMAP_API_GETLOCATION,

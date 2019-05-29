@@ -2,6 +2,13 @@ import { JM_APPKEY, JM_MASTERSECRET, JM_RANDOM_STR, JM_USER_PASSWORD } from './c
 import JIMService from './jm.operationService'
 const CryptoJS = require('crypto-js')
 
+function showToast(content) {
+    wx.showToast({
+        title: content,
+        icon: 'none'
+    })
+}
+
 function createSignature(authPayload) {
     return CryptoJS.MD5(
         `appkey=${authPayload.appkey}&timestamp=${authPayload.timestamp}&random_str=${
@@ -21,7 +28,7 @@ async function onInitSuccessful(resolve, currentUser, isRecursiveFlag) {
             return resolve(true)
         }
     }
-    var that = this
+    // var that = this
     const username = currentUser.userName
         // if (isRecursiveFlag) {
         // await JIMService.getUserInfoByUserName({ username })
@@ -30,8 +37,18 @@ async function onInitSuccessful(resolve, currentUser, isRecursiveFlag) {
     const loginCallbackData = await JIMService.login({
         username,
         password: JM_USER_PASSWORD
-    }).catch(err => {
+    }, (success) => {
+        console.log(`Login successfully ${success}`)
+        return resolve(true)
+    }, (err) => {
+        debugger
+        showToast('连接失败')
         console.error(`An error has been occured while logining JI GUANG account, Details: ${err}`)
+        return resolve(false)
+    }, (timeout) => {
+        showToast('连接超时')
+        console.error(`Timeout when try to login JI GUANG account, Details: ${timeout}`)
+        return resolve(false)
     })
 
     if (loginCallbackData.code) {
@@ -63,7 +80,8 @@ async function onInitSuccessful(resolve, currentUser, isRecursiveFlag) {
     } else {
         global.JIM.onDisconnect((res) => {
             console.log('---------------JIM has disconnected and retry to init----------------')
-            that.JMInit(currentUser)
+            showToast('网络连接失败，请稍后重试！')
+                // that.JMInit(currentUser)
         })
         console.log('---------------JIM login successfully----------------')
         global.username = loginCallbackData.userName
@@ -96,6 +114,7 @@ export default {
                 console.log('---------------JIM is initing----------------')
                 const data = await JIMService.init(initObj)
                 if (data.code) {
+                    showToast('网络连接失败， 请稍后重试！')
                     resolve(false)
                 } else {
                     console.log('---------------JIM init successfully----------------')
@@ -106,5 +125,37 @@ export default {
             console.error(`An error has been occured while processing JI GUANG account, Details: ${err}`)
             throw err
         }
+    },
+    JIM_CheckStatus: (currentUser) => {
+        return new Promise(async(resolve, reject) => {
+            const isConnect = await JIMService.checkIfConnect()
+            console.log('isconnect-----------' + isConnect)
+            const isInit = await JIMService.checkIfInit()
+            console.log('isinit--------------' + isInit)
+            if (!isConnect || !isInit) {
+                return this.JIMInit(resolve, currentUser)
+            }
+
+            // const isLogin = await !JIMService.checkIfLogin()
+            // console.log('isLogin-------------' + isLogin)
+            // if (isActive && !isLogin) {
+            //     await JIMService.login({
+            //         username: currentUser.userName,
+            //         password: JM_USER_PASSWORD
+            //     }, (success) => {
+            //         console.log(`Login successfully ${success}`)
+            //         return resolve(true)
+            //     }, (err) => {
+            //         showToast('连接失败')
+            //         console.error(`An error has been occured while logining JI GUANG account, Details: ${err}`)
+            //         return resolve(false)
+            //     }, (timeout) => {
+            //         showToast('连接超时')
+            //         console.error(`Timeout when try to login JI GUANG account, Details: ${timeout}`)
+            //         return resolve(false)
+            //     })
+            // }
+            return resolve(false)
+        })
     }
 }

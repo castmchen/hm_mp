@@ -3,7 +3,7 @@
     <map id="castm-map"
          :longitude="locationInfo.lng"
          :latitude="locationInfo.lat"
-         scale="16"
+         scale="15"
          :subkey="subkey"
          :markers="markers"
          @markertap="clickMarker($event)"></map>
@@ -31,10 +31,16 @@ export default {
   created() {
   },
   onShow() {
+    console.log('---------------------search-----------------------')
+    console.log(this.userInfo)
+    console.log(this.userInfo.userName)
     this.isLoadingFlag = true
+    if (this.userInfo == null || typeof this.userInfo === 'undefined') {
+      wx.navigateTo({ url: '/pages/authorise/main' })
+      return
+    }
     wechatService.getUserLocation(this.userInfo.userName).then(locationCallback => {
       if (locationCallback) {
-        console.log(locationCallback)
         if (this.checkIsCNLocation(locationCallback.lng, locationCallback.lat)) {
           if (locationCallback.isNewLocation) {
             userService.updateUserLocation({ userId: this.userInfo.userName, lng: locationCallback.lng, lat: locationCallback.lat })
@@ -42,7 +48,7 @@ export default {
           this.locationInfo = locationCallback
         }
 
-        return searchService.getNearbyContacts(this.locationInfo.lng, this.locationInfo.lat)
+        return searchService.getNearbyContacts(this.userInfo.userName, this.locationInfo.lng, this.locationInfo.lat)
       }
     }).then(markerCallback => {
       this.markers = markerCallback
@@ -61,6 +67,7 @@ export default {
   },
   methods: {
     clickMarker(e) {
+      console.log(e.mp.markerId)
       let url = '../profile/main?id=' + e.mp.markerId
       wx.navigateTo({ url })
     },
@@ -81,7 +88,6 @@ export default {
   width: 100%;
   min-height: 100%;
   height: 100%;
-  background: rgba(248, 248, 225, 0.6);
   font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
   font-size: 16px;
 }

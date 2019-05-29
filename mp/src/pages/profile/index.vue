@@ -17,7 +17,7 @@
                   color="#fb8592" />
           <i-grid-label>喜欢&添加</i-grid-label>
         </i-grid-item>
-        <i-grid-item>
+        <i-grid-item @click="sayHi()">
           <i-icon type="emoji"
                   size="40"
                   color="#58b256" />
@@ -53,6 +53,9 @@
 <script>
 import userService from '../../service/userService'
 import share from '../../components/share'
+import JIMInit from '../../common/jm.InitService'
+import JIMService from '../../common/jm.operationService'
+import { mapGetters } from 'vuex'
 
 export default {
   data() {
@@ -62,15 +65,15 @@ export default {
     }
   },
   onLoad(options) {
+    console.log('---------------------profile----------------------')
+    console.log(this.userInfo)
+    console.log(this.userInfo.userName)
+
     if (options.id == null || typeof options.id == "undefined") {
       wx.navigateBack()
     }
     this.isShareFlag = false
-    var contactId = options.id
-    this.getProfileById(contactId).then((p) => {
-      this.profile = p
-    })
-    userService.getUserById(contactId).then(user => {
+    userService.getUserById(options.id).then(user => {
       this.profile = user
     })
   },
@@ -84,7 +87,34 @@ export default {
     },
     listenCanleShare() {
       this.isShareFlag = false
+    },
+    sayHi() {
+      JIMInit.JIM_CheckStatus(this.userInfo).then(result => {
+        JIMService.sendSingleMsg({
+          target_username: this.profile.id,
+          content: 'hi'
+        }, (success) => {
+          wx.showToast({
+            title: '发送成功',
+            icon: 'none'
+          })
+        }, (err) => {
+          wx.showToast({
+            title: '发送失败，请稍后重试！',
+            icon: 'none'
+          })
+          console.error(`An error has been occured while sending message, Details: ${err}`)
+        }, (timeout) => {
+          wx.showToast({
+            title: '网络超时，请稍后重试！',
+            icon: 'none'
+          })
+        })
+      })
     }
+  },
+  computed: {
+    ...mapGetters(['userInfo'])
   },
   components: {
     share
@@ -99,9 +129,9 @@ export default {
   width: 100%;
   min-height: 100%;
   height: 100%;
-  background: rgba(248, 248, 225, 0.6);
   font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
   font-size: 14px;
+  color: #80848f;
 }
 
 #castm-profile > img {
@@ -127,7 +157,8 @@ export default {
 }
 
 #castm-profile .profileDetails p {
-  line-height: 50px;
+  line-height: 40px;
+  text-align: center;
 }
 
 #castm-profile .profileDetails i-grid i-grid-item {

@@ -146,7 +146,6 @@ export default {
   font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
   font-size: 18px;
   color: #80848f;
-  background: #f8f8f9;
   width: 100%;
   min-height: 100vh;
 }

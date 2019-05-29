@@ -214,44 +214,5 @@ export default {
   transform: translateX(-50px);
   transition: all 0.5s;
 }
-
-/*.i-swipeout-item {
-  width: 100%;
-  padding: 0;
-  box-sizing: border-box;
-  transition: transform 0.2s ease;
-  font-size: 14px;
-}
-
- .i-swipeout-button-group {
-  height: 100%;
-  width: 100%;
-  position: absolute;
-  color: #fff;
-}
-
-.i-swipeout-button-group .i-swipeout-button-first-item {
-  display: inline-block;
-  width: 50%;
-  height: 100%;
-  position: absolute;
-  left: 0px;
-  text-align: center;
-  vertical-align: middle;
-  line-height: 90px;
-  background-color: #19be6b;
-}
-
-.i-swipeout-button-group .i-swipeout-button-second-item {
-  display: inline-block;
-  width: 50%;
-  height: 100%;
-  position: absolute;
-  right: 0px;
-  text-align: center;
-  vertical-align: middle;
-  line-height: 90px;
-  background-color: #ed3f14;
-}  */
 </style>
 

@@ -10,34 +10,34 @@
       </div>
       <div id="castm-content">
         <div class="ad-section">
-          <img src="/static/img/ad1.png">
+          <img src="/static/img/ad2.png">
         </div>
         <div class="menu-section">
           <div class="menu-item">
             <i-card title="撩聊"
                     extra="㊤㊧"
-                    thumb="/static/img/yue.png"
+                    thumb="/static/img/logo/mm1.png"
                     @click="navigateTo('../dating/main')">
             </i-card>
           </div>
           <div class="menu-item">
             <i-card title="视频"
                     extra="㊤㊨"
-                    thumb="/static/img/video.png"
+                    thumb="/static/img/logo/mm2.png"
                     @click="navigateTo('../video/main')">
             </i-card>
           </div>
           <div class="menu-item margin-top-10">
             <i-card title="游戏"
                     extra="㊦㊧"
-                    thumb="/static/img/game.png"
+                    thumb="/static/img/logo/mm3.png"
                     @click="navigateTo('../game/main')">
             </i-card>
           </div>
           <div class="menu-item margin-top-10">
             <i-card title="段子"
                     extra="㊦㊨"
-                    thumb="/static/img/joke.png"
+                    thumb="/static/img/logo/mm4.png"
                     @click="navigateTo('../joke/main')">
             </i-card>
           </div>
@@ -45,7 +45,7 @@
             <div class="menu-item-cover"></div>
             <i-card title="更多"
                     extra="㊣"
-                    thumb="/static/img/more.png"
+                    thumb="/static/img/logo/mm5.png"
                     @click="controlShowMore">
             </i-card>
 
@@ -150,7 +150,7 @@ export default {
     },
     checkLoginStatus() {
       return new Promise((resolve, reject) => {
-        if (!this.userInfo) {
+        if (!this.userInfo || !this.userInfo.userName) {
           resolve(false)
         } else {
           return wechat.checkSessionValid(resolve).catch(err => {
@@ -173,23 +173,22 @@ export default {
     ...mapGetters(['notificationCount', 'userInfo'])
   },
   onLoad() {
+    this.initNotifications()
   },
   created() {
     this.isLoadingFlag = true
     this.currentTab = "home"
   },
   onShow() {
-    this.initNotifications()
+    console.log('---------------------------index------------------------')
+    console.log(this.userInfo)
+    console.log(this.userInfo.userName)
     this.checkLoginStatus().then(isLogin => {
       if (!isLogin) {
         wx.navigateTo({ url: '/pages/authorise/main' })
       }
       this.isLoadingFlag = false
     })
-    // if (!this.userInfo) {
-    //   wx.navigateTo({ url: '/pages/authorise/main' })
-    //   return
-    // }
   },
   components: { favoriteTab, notificationTab, serviceTab }
 }
@@ -207,7 +206,6 @@ export default {
   display: -webkit-flex;
   flex-flow: row wrap;
   align-content: space-between;
-  background: #f8f8f9;
 }
 
 #castm-home > .tap-section {
@@ -243,9 +241,9 @@ export default {
 }
 
 #castm-home #castm-content .ad-section {
-  width: 90%;
+  width: 100%;
   height: 25vh;
-  border: #e9eaec solid 0.5px;
+  /* border: #e9eaec solid 0.5px; */
   border-radius: 5%;
   overflow: hidden;
 }
@@ -305,8 +303,8 @@ export default {
   .menu-item-cover {
   width: 40%;
   height: 100%;
-  background: #ffffff;
   position: absolute;
+  background-color: #ffffff;
 }
 
 #castm-home #castm-footer {

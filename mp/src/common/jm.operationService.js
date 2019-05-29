@@ -15,13 +15,20 @@ export default {
         return this.callback(global.JIM.updateSelfInfo(userInfo), success, error, timeout)
     },
     checkIfLogin() {
-        return this.callback(global.JIM.isLogin())
+        return global.JIM.isLogin()
     },
     checkIfInit() {
-        return this.callback(global.JIM.isInit())
+        return global.JIM.isInit()
+    },
+    checkIfConnect() {
+        return global.JIM.isConnect()
     },
     getFriendList(success, error, timeout) {
         return this.callback(global.JIM.getFriendList(), success, error, timeout)
+    },
+    sendSingleMsg(msgInfo, success, error, timeout) {
+        debugger
+        return this.callback(global.JIM.sendSingleMsg(msgInfo), success, error, timeout)
     },
     callback(obj, ...args) {
         return new Promise(resolve => {
@@ -45,7 +52,7 @@ export default {
                     }
                     resolve({ code: -2 })
                 })
-            } else if (obj === false) {
+            } else if (!obj) {
                 resolve(obj)
             }
         })

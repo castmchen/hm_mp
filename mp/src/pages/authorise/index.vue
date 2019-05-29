@@ -81,7 +81,6 @@ export default {
   font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
   font-size: 12px;
   color: #80848f;
-  background: #f8f8f9;
   position: absolute;
   height: 100%;
   width: 100%;

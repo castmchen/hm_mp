@@ -1,7 +1,7 @@
 <template>
   <div id="castm-dating">
     <div id="castm-search">
-      <div>
+      <!-- <div>
         <i-icon type="coordinates_fill"
                 size="50"
                 color="#ffffff"
@@ -12,8 +12,29 @@
         <i-icon type="browse_fill"
                 size="50"
                 color="#ffffff"
-                @click="navigateToSearch('../search/main')" />
+                @click="navigateToSearch('../chat/main')" />
         <span>八分撩</span>
+      </div> -->
+      <div class="near-by">
+        <span>撩聊</span>
+        <div class="menu-item-avatar">
+          <img src="../../../static/img/robot/4.jpg">
+        </div>
+        <span>附近</span>
+      </div>
+      <div id="castm-selection"
+           v-bind:class="{'move-left': positionNumber == -1, 'move-none': positionNumber == 0, 'move-right': positionNumber == 1}"
+           @touchstart="onTouchStart"
+           @touchmove="onTouchMove"
+           @touchend="onTouchEnd">
+        左滑 | 右滑
+      </div>
+      <div class="minutes-8">
+        <span>八分</span>
+        <div class="menu-item-avatar">
+          <img src="../../../static/img/robot/10.jpg">
+        </div>
+        <span>撩聊</span>
       </div>
     </div>
 
@@ -65,8 +86,8 @@
               v-if="isLoadingFlag"
               fix></i-spin>
     </div>
-    <share :isShareFlag="isShareFlag"
-           @cancleShare="listenCanleShare()"></share>
+    <!-- <share :isShareFlag="isShareFlag"
+           @cancleShare="listenCancleShare()"></share> -->
   </div>
 </template>
 
@@ -80,7 +101,10 @@ export default {
       contactList: [],
       selectedContact: null,
       isLoadingFlag: false,
-      isShareFlag: false
+      isShareFlag: false,
+      positionNumber: 0,
+      locationX: 0,
+      locationY: 0
     }
   },
   created() {
@@ -91,8 +115,10 @@ export default {
   onHide() {
     this.isLoadingFlag = false
   },
-  onLoad() {
+  onShow() {
     this.isShareFlag = false
+    this.isLoadingFlag = false
+    this.positionNumber = 0
   },
   methods: {
     showMoreActions(contactInfo) {
@@ -126,8 +152,52 @@ export default {
     share() {
       this.isShareFlag = true
     },
-    listenCanleShare() {
+    listenCancleShare() {
       this.isShareFlag = false
+    },
+    onTouchStart(e) {
+      this.isLoadingFlag = true
+      this.locationX = e.mp.touches[0].clientX
+      this.locationY = e.mp.touches[0].clientY
+    },
+    onTouchMove(e) {
+      const currentLocationX = e.mp.touches[0].clientX
+      const currentLocationY = e.mp.touches[0].clientY
+      const currentAngle = 360 * Math.atan((currentLocationY - this.locationY) / (currentLocationX - this.locationX)) / (2 * Math.PI)
+
+      console.log('----------------move-----------------')
+      console.log(currentLocationX)
+      if (currentAngle < 10) {
+        currentLocationX < this.locationX ? this.positionNumber = -1 : this.positionNumber = 1
+        console.log(this.locationX)
+        e.preventDefault()
+      }
+
+      if (this.positionNumber == -1 && currentLocationX < this.locationX) {
+        wx.navigateTo({ url: '/pages/search/main' })
+      } else if (this.positionNumber == 1 && currentLocationX > this.locationX) {
+        wx.navigateTo({ url: '/pages/chat/main' })
+      } else {
+        this.positionNumber = 0
+        this.locationX = 0
+        this.locationY = 0
+      }
+      this.isLoadingFlag = false
+    },
+    onTouchEnd(e) {
+      const currentLocationX = e.mp.changedTouches[0].clientX
+
+      console.log('position' + this.positionNumber)
+      if (this.positionNumber == -1 && currentLocationX < this.locationX) {
+        wx.navigateTo({ url: '/pages/search/main' })
+      } else if (this.positionNumber == 1 && currentLocationX > this.locationX) {
+        wx.navigateTo({ url: '/pages/chat/main' })
+      } else {
+        this.positionNumber = 0
+        this.locationX = 0
+        this.locationY = 0
+      }
+      this.isLoadingFlag = false
     }
   },
   components: {
@@ -139,8 +209,7 @@ export default {
 <style scoped>
 #castm-dating {
   font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
-  font-size: 16px;
-  background: #f8f8f9;
+  font-size: 14px;
   display: flex;
   display: -webkit-flex;
   flex-flow: row wrap;
@@ -150,28 +219,105 @@ export default {
 
 #castm-dating #castm-search {
   width: 100%;
-  height: 120px;
+  height: 60px;
   display: flex;
   display: -webkit-flex;
   flex-flow: row nowrap;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
-  border-bottom: 0.5px solid rgba(30, 54, 42, 1);
-  background: rgba(30, 54, 42, 0.4);
+  border-top: 3px solid #ffced3;
+  border-bottom: 3px solid #ffced3;
+  background-color: #ffe6ea;
+  color: #ffffff;
 }
 
-#castm-dating #castm-search > div {
-  height: 50px;
-  width: 50px;
-  background: rgba(30, 54, 42, 0.7);
-  box-shadow: rgba(30, 54, 42, 0.4) 5px 5px 5px;
+#castm-dating #castm-search #castm-selection {
+  background-color: #8bab68;
+  width: 40%;
+  height: 40px;
+  border-radius: 50px;
+  text-align: center;
+  line-height: 40px;
+  font-size: 18px;
+  box-shadow: #4d892e 5px 5px 20px 0px;
+  /* transform: translateX(0);
+  transition: all 0.5s; */
+  z-index: 1;
+}
+
+#castm-dating #castm-search .move-left {
+  transform: translateX(-60%);
+  transition: all 0.5s;
+}
+
+#castm-dating #castm-search .move-none {
+  transform: translateX(0);
+  transition: all 0.5s;
+}
+
+#castm-dating #castm-search .move-right {
+  transform: translateX(60%);
+  transition: all 0.5s;
+}
+
+#castm-dating #castm-search .near-by {
+  background-color: #cb525b;
+  width: 25%;
+  height: 100%;
+  border-radius: 5px;
+  display: flex;
+  display: -webkit-flex;
+  justify-content: center;
+  z-index: 2;
+}
+
+#castm-dating #castm-search .near-by span {
+  line-height: 30px !important;
+  font-size: 14px;
+  width: 5px;
+}
+
+#castm-dating #castm-search .minutes-8 {
+  background-color: #ffe056;
+  width: 25%;
+  height: 100%;
+  border-radius: 5px;
+  display: flex;
+  display: -webkit-flex;
+  justify-content: center;
+  z-index: 2;
+}
+
+#castm-dating #castm-search .minutes-8 span {
+  line-height: 30px !important;
+  font-size: 14px;
+  width: 5px;
+}
+
+#castm-dating #castm-search .menu-item-avatar {
+  width: 55px;
+  height: 55px;
+  margin-right: 5px;
+}
+
+#castm-dating #castm-search .menu-item-avatar img {
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  border: 2px solid #ffffff;
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+#castm-dating #castm-dating #castm-search .div-layout {
+  width: 30%;
+  height: 100%;
   border-radius: 25%;
-  margin-top: -15px;
 }
 
 #castm-dating #castm-search > div span {
   line-height: 40px;
   color: #ffffff;
+  width: 15px;
 }
 
 /* #castm-dating #castm-search > div:last-child {
